@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
 
 #define WARN(MSG) do { fprintf(stderr, "\033[1m%s:\033[0m In function <\033[1m%s\033[0m>:\n\033[1m%s:%d: \033[35;1mwarning:\033[0m %s\n", __FILE__, __func__, __FILE__, __LINE__, MSG); } while(0)
 #define ERROR(MSG) do { fprintf(stderr, "\033[1m%s:\033[0m In function <\033[1m%s\033[0m>:\n\033[1m%s:%d: \033[31;1merror:\033[0m %s\n", __FILE__, __func__, __FILE__, __LINE__, MSG); exit(EXIT_FAILURE); } while(0)
