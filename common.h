@@ -1,5 +1,4 @@
-#ifndef COMMON_H
-#define COMMON_H
+#pragma once
 
 #include <stddef.h>
 #include <stdint.h>
@@ -32,5 +31,3 @@ typedef uint64_t u64;
 #define MIN(A,B) ((A)<(B)?(A):(B))
 #define MAX(A,B) ((A)>(B)?(A):(B))
 #define ABS(X) ((X)>=0?(X):-(X))
-
-#endif
