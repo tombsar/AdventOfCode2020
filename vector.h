@@ -1,5 +1,4 @@
-#ifndef VECTOR_H
-#define VECTOR_H
+#pragma once
 
 #include "common.h"
 
@@ -111,5 +110,3 @@ void vector_sort (struct Vector * v) {
         }
     } while (swaps);
 }
-
-#endif
