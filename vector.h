@@ -18,6 +18,14 @@ void vector_init (struct Vector * v, size_t capacity) {
     }
 }
 
+long * vector_begin (struct Vector const * v) {
+    return v->data;
+}
+
+long * vector_end (struct Vector const * v) {
+    return v->data + v->count;
+}
+
 void vector_resize (struct Vector * v, size_t capacity) {
     if (capacity) {
         v->capacity = capacity;
@@ -86,14 +94,6 @@ void vector_insert_sorted (struct Vector * v, long x) {
         i += 1;
     }
     vector_insert(v, x, i);
-}
-
-long * vector_begin (struct Vector * v) {
-    return v->data;
-}
-
-long * vector_end (struct Vector * v) {
-    return v->data + v->count;
 }
 
 void vector_sort (struct Vector * v) {
