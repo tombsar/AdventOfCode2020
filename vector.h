@@ -105,7 +105,7 @@ void vector_insert (struct Vector * v, long x, size_t index) {
     if (index == v->count) {
         vector_push_back(v, x);
     } else {
-        vector_ensure_capacity(v, v->capacity + 1);
+        vector_ensure_capacity(v, v->count+1);
         memmove(&(v->data[index+1]), &(v->data[index]), (v->count - index)*sizeof(long));
         v->data[index] = x;
         v->count += 1;
