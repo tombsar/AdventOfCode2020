@@ -32,8 +32,9 @@ void vector_resize (struct Vector * v, size_t capacity) {
 }
 
 void vector_grow (struct Vector * v) {
-    size_t capacity = v->capacity + v->capacity / 2;
-    vector_resize(v, MAX(capacity, 1));
+    size_t capacity = v->capacity;
+    capacity = capacity + MAX(capacity / 2, 1);
+    vector_resize(v, capacity);
 }
 
 void vector_ensure_capacity (struct Vector * v, size_t capacity) {
@@ -62,7 +63,7 @@ long vector_pop_front (struct Vector * v) {
     ASSERT(v->count);
     long x = v->data[0];
     v->count -= 1;
-    memmove(&(v->data[0]), &(v->data[1]), v->count);
+    memmove(&(v->data[0]), &(v->data[1]), v->count*sizeof(long));
     return x;
 }
 
@@ -72,7 +73,7 @@ void vector_insert (struct Vector * v, long x, size_t index) {
         vector_push_back(v, x);
     } else {
         vector_ensure_capacity(v, v->capacity + 1);
-        memmove(&(v->data[index+1]), &(v->data[index]), v->count - index);
+        memmove(&(v->data[index+1]), &(v->data[index]), (v->count - index)*sizeof(long));
         v->data[index] = x;
         v->count += 1;
     }
