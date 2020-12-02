@@ -88,12 +88,33 @@ void vector_insert (struct Vector * v, long x, size_t index) {
 }
 
 void vector_insert_sorted (struct Vector * v, long x) {
-    // TODO: Use binary search to speed this up
-    size_t i = 0;
-    while (i < v->count && v->data[i] < x) {
-        i += 1;
+    if (v->count) {
+        size_t i;
+        if (x <= v->data[0]) {
+            i = 0;
+        } else if (x >= v->data[v->count-1]) {
+            i = v->count;
+        } else {
+            size_t il = 0;
+            size_t iu = v->count-1;
+            while ((iu-il) > 1) {
+                size_t im = il+(iu-il)/2;
+                long xm = v->data[im];
+                if (x > xm) {
+                    il = im;
+                } else if (x < xm) {
+                    iu = im;
+                } else {
+                    il = (iu = im);
+                    break;
+                }
+            }
+            i = iu;
+        }
+        vector_insert(v, x, i);
+    } else {
+        vector_push_back(v, x);
     }
-    vector_insert(v, x, i);
 }
 
 void vector_sort (struct Vector * v) {
