@@ -143,18 +143,23 @@ void vector_insert_sorted (struct Vector * v, long x) {
     }
 }
 
-void vector_sort (struct Vector * v) {
-    // TODO: Something better than bubble sort!
+// TODO: Move this into a different header
+void bubblesort (long * start, long * end) {
     size_t swaps;
     do {
         swaps = 0;
-        for (size_t i = 1; i < v->count; ++i) {
-            if (v->data[i-1] > v->data[i]) {
-                long tmp = v->data[i-1];
-                v->data[i-1] = v->data[i];
-                v->data[i] = tmp;
+        for (long * p0 = start, * p1 = start+1; p1 != end; ++p0, ++p1) {
+            if (*p1 > *p0) {
+                long tmp = *p0;
+                *p0 = *p1;
+                *p1 = tmp;
                 ++swaps;
             }
         }
     } while (swaps);
+}
+
+void vector_sort (struct Vector * v) {
+    // TODO: Something better than bubble sort!
+    bubblesort(vector_begin(v), vector_end(v));
 }
