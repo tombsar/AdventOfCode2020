@@ -18,6 +18,22 @@ void vector_init (struct Vector * v, size_t capacity) {
     }
 }
 
+struct Vector vector_copy (struct Vector const * v) {
+    struct Vector vn;
+    vector_init(&vn, v->capacity);
+    memcpy(vn.data, v->data, v->count * sizeof(long));
+    vn.count = v->count;
+    return vn;
+}
+
+struct Vector vector_move (struct Vector * v) {
+    struct Vector vn = *v;
+    v->capacity = 0;
+    v->count = 0;
+    v->data = NULL;
+    return vn;
+}
+
 long * vector_begin (struct Vector const * v) {
     return v->data;
 }
