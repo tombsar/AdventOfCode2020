@@ -26,6 +26,15 @@ long * vector_end (struct Vector const * v) {
     return v->data + v->count;
 }
 
+_Bool vector_is_sorted (struct Vector const * v) {
+    for (size_t i = 1; i < v->count; ++i) {
+        if (v->data[i] < v->data[i-1]) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
 void vector_resize (struct Vector * v, size_t capacity) {
     if (capacity) {
         v->capacity = capacity;
@@ -89,6 +98,7 @@ void vector_insert (struct Vector * v, long x, size_t index) {
 
 void vector_insert_sorted (struct Vector * v, long x) {
     if (v->count) {
+        ASSERT(vector_is_sorted(v));
         size_t i;
         if (x <= v->data[0]) {
             i = 0;
