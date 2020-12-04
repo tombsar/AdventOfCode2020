@@ -28,9 +28,18 @@ _Bool sv_is_empty (struct StringView const * s) {
     return !(s->end > s->start);
 }
 
+_Bool sv_equals (struct StringView const * s, char const * str) {
+    for (char const * p = s->start; p < s->end; ++p, ++str) {
+        if (*p != *str) {
+            return 0;
+        }
+    }
+    return (*str == '\0');
+}
+
 void sv_print (struct StringView const * s) {
     putchar('"');
-    for (char const * p = s->start; p != s->end; ++p) {
+    for (char const * p = s->start; p < s->end; ++p) {
         putchar(*p);
     }
     putchar('"');
@@ -46,9 +55,9 @@ char sv_eat_char (struct StringView * s) {
     return c;
 }
 
-struct StringView sv_eat_space (struct StringView * s) {
+struct StringView sv_eat_spaces (struct StringView * s) {
     char const * p = s->start;
-    while (p != s->end && isspace(*p)) {
+    while (p < s->end && isspace(*p)) {
         ++p;
     }
     struct StringView left = {
@@ -61,7 +70,7 @@ struct StringView sv_eat_space (struct StringView * s) {
 
 struct StringView sv_eat_until (struct StringView * s, char c) {
     char const * p = s->start;
-    while (p != s->end && *p != c) {
+    while (p < s->end && *p != c) {
         ++p;
     }
     struct StringView left = {
@@ -74,7 +83,7 @@ struct StringView sv_eat_until (struct StringView * s, char c) {
 
 struct StringView sv_eat_until_space (struct StringView * s) {
     char const * p = s->start;
-    while (p != s->end && !isspace(*p)) {
+    while (p < s->end && !isspace(*p)) {
         ++p;
     }
     struct StringView left = {
