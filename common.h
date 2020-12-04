@@ -31,3 +31,14 @@ typedef uint64_t u64;
 #define MIN(A,B) ((A)<(B)?(A):(B))
 #define MAX(A,B) ((A)>(B)?(A):(B))
 #define ABS(X) ((X)>=0?(X):-(X))
+
+char const * make_c_string (char const * start, char const * end) {
+    ASSERT(start);
+    ASSERT(end);
+    ASSERT(end >= start);
+    size_t len = end - start;
+    char * str = malloc(len+1);
+    memcpy(str, start, len);
+    str[len] = '\0';
+    return str;
+}
