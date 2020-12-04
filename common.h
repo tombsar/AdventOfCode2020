@@ -17,7 +17,7 @@
 #define ASSERT(X)
 #endif
 
-#define DISP(X,FMT) do { printf("\033[1m%s:\033[0m In function <\033[1m%s\033[0m>\n\033[1m%s:%d: \033[36mdisp:\033[0m %s = " #FMT "\n", __FILE__, __func__, __FILE__, __LINE__, #X, X); } while (0)
+#define DISP(X,FMT) do { printf("\033[1m%s:\033[0m In function <\033[1m%s\033[0m>\n\033[1m%s:%d: \033[36mdisp:\033[0m %s = " FMT "\n", __FILE__, __func__, __FILE__, __LINE__, #X, X); } while (0)
 
 typedef int8_t   s8;
 typedef int16_t  s16;
