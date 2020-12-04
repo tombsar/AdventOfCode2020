@@ -18,10 +18,10 @@ int main (int argc, char ** argv) {
 
     for (size_t i = 0; i < (v.count-3); ++i) {
         for (size_t j = i+1; j < (v.count-2); ++j) {
-            int target = 2020 - v.data[i] - v.data[j];
+            int target = 2020 - (int)v.data[i] - (int)v.data[j];
             for (size_t k = j+1; k < v.count; ++k) {
-                if (v.data[k] == target) {
-                    printf("Answer: %i\n", v.data[i]*v.data[j]*v.data[k]);
+                if ((int)v.data[k] == target) {
+                    printf("Answer: %zi\n", v.data[i]*v.data[j]*v.data[k]);
                     exit(EXIT_SUCCESS);
                 }
             }

@@ -5,7 +5,7 @@
 typedef struct Vector {
     size_t capacity;
     size_t count;
-    s32 * data;
+    intptr_t * data;
 } Vector_t;
 
 void vector_init (struct Vector * v, size_t capacity) {
@@ -13,7 +13,7 @@ void vector_init (struct Vector * v, size_t capacity) {
     v->capacity = capacity;
     v->count = 0;
     if (capacity) {
-        v->data = malloc(sizeof(s32) * capacity);
+        v->data = malloc(sizeof(intptr_t) * capacity);
     } else {
         v->data = NULL;
     }
@@ -23,7 +23,7 @@ struct Vector vector_copy (struct Vector const * v) {
     ASSERT(v);
     struct Vector vn;
     vector_init(&vn, v->capacity);
-    memcpy(vn.data, v->data, v->count * sizeof(s32));
+    memcpy(vn.data, v->data, v->count * sizeof(intptr_t));
     vn.count = v->count;
     return vn;
 }
@@ -37,12 +37,12 @@ struct Vector vector_move (struct Vector * v) {
     return vn;
 }
 
-s32 * vector_begin (struct Vector const * v) {
+intptr_t * vector_begin (struct Vector const * v) {
     ASSERT(v);
     return v->data;
 }
 
-s32 * vector_end (struct Vector const * v) {
+intptr_t * vector_end (struct Vector const * v) {
     ASSERT(v);
     return v->data + v->count;
 }
@@ -57,7 +57,7 @@ _Bool vector_is_sorted (struct Vector const * v) {
     return 1;
 }
 
-ptrdiff_t vector_find (struct Vector const * v, s32 x) {
+ptrdiff_t vector_find (struct Vector const * v, intptr_t x) {
     ASSERT(v);
     for (size_t i = 0; i < v->count; ++i) {
         if (v->data[i] == x) {
@@ -67,7 +67,7 @@ ptrdiff_t vector_find (struct Vector const * v, s32 x) {
     return -1;
 }
 
-ptrdiff_t vector_find_sorted (struct Vector * v, s32 x) {
+ptrdiff_t vector_find_sorted (struct Vector * v, intptr_t x) {
     ASSERT(v);
     ASSERT(vector_is_sorted(v));
     if (v->count) {
@@ -78,7 +78,7 @@ ptrdiff_t vector_find_sorted (struct Vector * v, s32 x) {
             ptrdiff_t iu = v->count;
             while (iu > il) {
                 ptrdiff_t im = il + (iu-il)/2;
-                s32 xm = v->data[im];
+                intptr_t xm = v->data[im];
                 if (x < xm) {
                     iu = im;
                 } else if (x > xm) {
@@ -97,7 +97,7 @@ void vector_resize (struct Vector * v, size_t capacity) {
     if (capacity) {
         v->capacity = capacity;
         v->count = MIN(v->count, capacity);
-        v->data = realloc(v->data, sizeof(s32) * capacity);
+        v->data = realloc(v->data, sizeof(intptr_t) * capacity);
     } else {
         free(v->data);
         v->capacity = 0;
@@ -125,42 +125,42 @@ void vector_clear (struct Vector * v) {
     v->count = 0;
 }
 
-void vector_push_back (struct Vector * v, s32 x) {
+void vector_push_back (struct Vector * v, intptr_t x) {
     ASSERT(v);
     vector_ensure_capacity(v, v->count+1);
     v->data[v->count] = x;
     v->count += 1;
 }
 
-s32 vector_pop_back (struct Vector * v) {
+intptr_t vector_pop_back (struct Vector * v) {
     ASSERT(v->count);
     v->count -= 1;
     return v->data[v->count];
 }
 
-s32 vector_pop_front (struct Vector * v) {
+intptr_t vector_pop_front (struct Vector * v) {
     ASSERT(v);
     ASSERT(v->count);
-    s32 x = v->data[0];
+    intptr_t x = v->data[0];
     v->count -= 1;
-    memmove(&(v->data[0]), &(v->data[1]), v->count*sizeof(s32));
+    memmove(&(v->data[0]), &(v->data[1]), v->count*sizeof(intptr_t));
     return x;
 }
 
-void vector_insert (struct Vector * v, s32 x, size_t index) {
+void vector_insert (struct Vector * v, intptr_t x, size_t index) {
     ASSERT(v);
     ASSERT(index <= v->count);
     if (index == v->count) {
         vector_push_back(v, x);
     } else {
         vector_ensure_capacity(v, v->count+1);
-        memmove(&(v->data[index+1]), &(v->data[index]), (v->count - index)*sizeof(s32));
+        memmove(&(v->data[index+1]), &(v->data[index]), (v->count - index)*sizeof(intptr_t));
         v->data[index] = x;
         v->count += 1;
     }
 }
 
-void vector_insert_sorted (struct Vector * v, s32 x) {
+void vector_insert_sorted (struct Vector * v, intptr_t x) {
     ASSERT(v);
     if (v->count) {
         ASSERT(vector_is_sorted(v));
@@ -174,7 +174,7 @@ void vector_insert_sorted (struct Vector * v, s32 x) {
             size_t iu = v->count-1;
             while ((iu-il) > 1) {
                 size_t im = il+(iu-il)/2;
-                s32 xm = v->data[im];
+                intptr_t xm = v->data[im];
                 if (x > xm) {
                     il = im;
                 } else if (x < xm) {
@@ -200,19 +200,19 @@ void vector_erase (struct Vector * v, size_t i) {
     } else {
         v->count -= 1;
         if (v->count) {
-            memmove(&(v->data[i]), &(v->data[i+1]), v->count*sizeof(s32));
+            memmove(&(v->data[i]), &(v->data[i+1]), v->count*sizeof(intptr_t));
         }
     }
 }
 
 // TODO: Move this into a different header
-void bubblesort (s32 * start, s32 * end) {
+void bubblesort (intptr_t * start, intptr_t * end) {
     size_t swaps;
     do {
         swaps = 0;
-        for (s32 * p0 = start, * p1 = start+1; p1 != end; ++p0, ++p1) {
+        for (intptr_t * p0 = start, * p1 = start+1; p1 != end; ++p0, ++p1) {
             if (*p1 > *p0) {
-                s32 tmp = *p0;
+                intptr_t tmp = *p0;
                 *p0 = *p1;
                 *p1 = tmp;
                 ++swaps;

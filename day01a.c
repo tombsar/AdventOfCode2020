@@ -17,10 +17,10 @@ int main (int argc, char ** argv) {
     } while (1);
 
     for (size_t i = 0; i < (v.count-2); ++i) {
-        int target = 2020 - v.data[i];
+        int target = 2020 - (int)(v.data[i]);
         for (size_t j = i+1; j < v.count; ++j) {
-            if (v.data[j] == target) {
-                printf("Answer: %i\n", v.data[i]*v.data[j]);
+            if ((int)v.data[j] == target) {
+                printf("Answer: %zi\n", v.data[i]*v.data[j]);
                 exit(EXIT_SUCCESS);
             }
         }
