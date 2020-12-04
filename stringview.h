@@ -40,13 +40,10 @@ char const * sv_make_c_string (struct StringView const * s) {
     return make_c_string(s->start, s->end);
 }
 
-struct StringView sv_eat_char (struct StringView * s) {
-    struct StringView left = {
-        .start = s->start,
-        .end = s->start+1
-    };
-    s->start = s->start+1;
-    return left;
+char sv_eat_char (struct StringView * s) {
+    char c = s->start[0];
+    s->start = &(s->start[1]);
+    return c;
 }
 
 struct StringView sv_eat_space (struct StringView * s) {
