@@ -13,11 +13,13 @@ int main (int argc, char ** argv) {
 
         size_t row = 0;
         for (int i=0; i<7; ++i) {
+            ASSERT(s[i] == 'F' || s[i] == 'B');
             row = row << 1 | (s[i] == 'B');
         }
 
         size_t col = 0;
         for (int i=7; i<10; ++i) {
+            ASSERT(s[i] == 'L' || s[i] == 'R');
             col = col << 1 | (s[i] == 'R');
         }
 
