@@ -8,16 +8,16 @@
 #include <ctype.h>
 #include <string.h>
 
-#define WARN(MSG) do { fprintf(stderr, "\033[1m%s:\033[0m In function <\033[1m%s\033[0m>:\n\033[1m%s:%d: \033[35;1mwarning:\033[0m %s\n", __FILE__, __func__, __FILE__, __LINE__, MSG); } while(0)
-#define ERROR(MSG) do { fprintf(stderr, "\033[1m%s:\033[0m In function <\033[1m%s\033[0m>:\n\033[1m%s:%d: \033[31;1merror:\033[0m %s\n", __FILE__, __func__, __FILE__, __LINE__, MSG); exit(EXIT_FAILURE); } while(0)
+#define WARN(...) do { fprintf(stderr, "\033[1m%s:\033[0m In function <\033[1m%s\033[0m>:\n\033[1m%s:%d: \033[35;1mwarning:\033[0m %s\n", __FILE__, __func__, __FILE__, __LINE__); fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n"); } while(0)
+#define ERROR(...) do { fprintf(stderr, "\033[1m%s:\033[0m In function <\033[1m%s\033[0m>:\n\033[1m%s:%d: \033[31;1merror:\033[0m ", __FILE__, __func__, __FILE__, __LINE__); fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n"); exit(EXIT_FAILURE); } while(0)
 
 #ifndef NDEBUG
-#define ASSERT(X) do { if (!(X)) { fprintf(stderr, "\033[1m%s:\033[0m In function <\033[1m%s\033[0m>:\n\033[1m%s:%d: \033[31;1merror:\033[0m Assertion \"%s\" failed\n", __FILE__, __func__, __FILE__, __LINE__, #X); exit(EXIT_FAILURE); } } while(0)
+#define ASSERT(X) do { if (!(X)) { ERROR("Assertion \"%s\" failed", #X); } } while(0)
 #else
 #define ASSERT(X)
 #endif
 
-#define DISP(X,FMT) do { printf("\033[1m%s:\033[0m In function <\033[1m%s\033[0m>\n\033[1m%s:%d: \033[36mdisp:\033[0m %s = " FMT "\n", __FILE__, __func__, __FILE__, __LINE__, #X, X); } while (0)
+#define DISP(X,FMT) do { printf("\033[1m%s:\033[0m In function <\033[1m%s\033[0m>\n\033[1m%s:%d: \033[36mdisp:\033[0m %s = ", __FILE__, __func__, __FILE__, __LINE__, #X); printf(FMT, X); printf("\n"); } while (0)
 
 typedef int8_t   s8;
 typedef int16_t  s16;
