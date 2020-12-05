@@ -11,19 +11,16 @@ int main (int argc, char ** argv) {
 
         ASSERT(strlen(s) == 11);
 
-        size_t row = 0;
+        size_t id = 0;
         for (int i=0; i<7; ++i) {
             ASSERT(s[i] == 'F' || s[i] == 'B');
-            row = row << 1 | (s[i] == 'B');
+            id = (id << 1) | (s[i] == 'B');
         }
 
-        size_t col = 0;
         for (int i=7; i<10; ++i) {
             ASSERT(s[i] == 'L' || s[i] == 'R');
-            col = col << 1 | (s[i] == 'R');
+            id = (id << 1) | (s[i] == 'R');
         }
-
-        size_t id = row*8+col;
 
         id_max = MAX(id_max, id);
     } while (1);
