@@ -134,7 +134,7 @@ int main (int argc, char ** argv) {
                 } else if (sv_equals(&key, "cid")) {
                     passport.cid = sv_make_c_string(&val);
                 } else {
-                    ERROR("Unknown key");
+                    ERROR("Unknown key \"%s\"", sv_make_c_string(&key));
                 }
             } while (!sv_is_empty(&line));
         }
