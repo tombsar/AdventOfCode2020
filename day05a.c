@@ -3,7 +3,7 @@
 int main (int argc, char ** argv) {
     size_t id_max = 0;
     do {
-        char buf [1024];
+        char buf [BUFSIZ];
         char * s = fgets(buf, sizeof(buf), stdin);
         if (s == NULL) {
             break;
