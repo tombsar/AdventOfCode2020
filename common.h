@@ -32,6 +32,8 @@ typedef uint64_t u64;
 #define MAX(A,B) ((A)>(B)?(A):(B))
 #define ABS(X) ((X)>=0?(X):-(X))
 
+#define ARRAYCOUNT(X) (sizeof(X) / sizeof(X[0]))
+
 char const * make_c_string (char const * start, char const * end) {
     ASSERT(start);
     ASSERT(end);
