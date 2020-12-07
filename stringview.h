@@ -68,6 +68,19 @@ struct StringView sv_eat_spaces (struct StringView * s) {
     return left;
 }
 
+struct StringView sv_eat_digits (struct StringView * s) {
+    char const * p = s->start;
+    while (p < s->end && isdigit(*p)) {
+        ++p;
+    }
+    struct StringView left = {
+        .start = s->start,
+        .end = p
+    };
+    s->start = p;
+    return left;
+}
+
 struct StringView sv_eat_until (struct StringView * s, char c) {
     char const * p = s->start;
     while (p < s->end && *p != c) {
@@ -84,6 +97,19 @@ struct StringView sv_eat_until (struct StringView * s, char c) {
 struct StringView sv_eat_until_space (struct StringView * s) {
     char const * p = s->start;
     while (p < s->end && !isspace(*p)) {
+        ++p;
+    }
+    struct StringView left = {
+        .start = s->start,
+        .end = p
+    };
+    s->start = p;
+    return left;
+}
+
+struct StringView sv_eat_until_punctuation (struct StringView * s) {
+    char const * p = s->start;
+    while (p < s->end && !ispunct(*p)) {
         ++p;
     }
     struct StringView left = {
