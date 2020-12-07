@@ -33,6 +33,27 @@ u64 unhash64 (u64 x) {
     return x;
 }
 
+/* djb2 hash function taken from http://www.cse.yorku.ca/~oz/hash.html */
+u32 hash_string (char const * start, char const * end) {
+    u32 hash = 5381;
+    while (start < end) {
+        u32 c = *start;
+        hash = ((hash << 5) + hash) + c;
+        ++start;
+    }
+    return hash;
+}
+
+u32 hash_c_string (char const * str) {
+    u32 hash = 5381;
+    while (*str) {
+        u32 c = *str;
+        hash = ((hash << 5) + hash) + c;
+        ++str;
+    }
+    return hash;
+}
+
 typedef struct HashSet {
     size_t n_buckets;
     struct Vector * buckets;
