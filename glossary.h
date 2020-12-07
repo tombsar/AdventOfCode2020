@@ -103,6 +103,10 @@ intptr_t glossary_find (struct Glossary * g, StringView_t sv) {
     return -1;
 }
 
+intptr_t glossary_find_c_string (struct Glossary * g, char const * str) {
+    return glossary_find(g, sv_view_c_string(str));
+}
+
 intptr_t glossary_add (struct Glossary * g, StringView_t sv) {
     intptr_t id = glossary_find(g, sv);
     if (id < 0) {
