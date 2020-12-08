@@ -8,7 +8,7 @@ int main (int argc, char ** argv) {
         int in;
         int ret = scanf("%i", &in);
         if (ret == 1) {
-            vector_push_back(&v, in);
+            vector_insert_sorted(&v, in);
         } else if (ret == EOF) {
             break;
         } else {
@@ -16,13 +16,11 @@ int main (int argc, char ** argv) {
         }
     } while (1);
 
-    for (size_t i = 0; i < (v.count-2); ++i) {
+    for (size_t i = 0; i < v.count; ++i) {
         int target = 2020 - (int)(v.data[i]);
-        for (size_t j = i+1; j < v.count; ++j) {
-            if ((int)v.data[j] == target) {
-                printf("Answer: %zi\n", v.data[i]*v.data[j]);
-                exit(EXIT_SUCCESS);
-            }
+        if (vector_find_sorted(&v, target) != -1) {
+            printf("Answer: %zi\n", v.data[i]*target);
+            return 0;
         }
     }
 }
