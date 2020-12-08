@@ -35,16 +35,14 @@ int main (int argc, char ** argv) {
     TreeGrid_t grid = {};
 
     char buf [256];
-    // HACK: Vulnerable to buffer overflow!
-    scanf("%s", &(buf[0]));
+    scanf("%255s", &(buf[0]));
 
     grid.width = strlen(&(buf[0]));
 
     treegrid_push_row(&grid, buf);
 
     do {
-        // HACK: Vulnerable to buffer overflow!
-        int ret = scanf("%s", &(buf[0]));
+        int ret = scanf("%255s", &(buf[0]));
         if (ret == 1) {
             treegrid_push_row(&grid, buf);
         } else if (ret == EOF) {

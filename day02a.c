@@ -22,9 +22,8 @@ int main (int argc, char ** argv) {
     int n_valid = 0;
     do {
         Policy_t policy;
-        // HACK: Potential buffer overflow!
         char password [256];
-        int ret = scanf("%i-%i %c: %s", &(policy.n_min), &(policy.n_max), &(policy.c), &(password[0]));
+        int ret = scanf("%i-%i %c: %255s", &(policy.n_min), &(policy.n_max), &(policy.c), &(password[0]));
         if (ret == 4) {
             if (validate(password, policy)) {
                 ++n_valid;
