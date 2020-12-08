@@ -51,7 +51,7 @@ int main (int argc, char ** argv) {
     do {
         char op [4];
         int arg;
-        int ret = scanf("%s %i", &(op[0]), &arg);
+        int ret = scanf("%3s %i", &(op[0]), &arg);
         if (ret == 2) {
             if (n_instructions == instructions_capacity) {
                 instructions_capacity *= 2;

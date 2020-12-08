@@ -13,10 +13,10 @@ typedef struct Instruction {
 
 int runProgram (size_t n_instructions, Instruction_t const * instructions) {
     int accumulator = 0;
-    int pc = 0;
+    size_t pc = 0;
     _Bool * run = calloc(n_instructions, sizeof(_Bool));
     do {
-        ASSERT(pc >= 0 && pc < n_instructions);
+        ASSERT(pc < n_instructions);
         if (run[pc]) {
             break;
         }
@@ -45,7 +45,7 @@ int main (int argc, char ** argv) {
     do {
         char op [4];
         int arg;
-        int ret = scanf("%s %i", &(op[0]), &arg);
+        int ret = scanf("%3s %i", &(op[0]), &arg);
         if (ret == 2) {
             if (n_instructions == instructions_capacity) {
                 instructions_capacity *= 2;
