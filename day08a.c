@@ -4,37 +4,49 @@ typedef enum Operation {
     OP_NOP,
     OP_ACC,
     OP_JMP
-} Operation;
+} Operation_t;
 
 typedef struct Instruction {
-    Operation op;
+    enum Operation op;
     int arg;
 } Instruction_t;
 
-int runProgram (size_t n_instructions, Instruction_t const * instructions) {
+typedef struct Program {
+    size_t n_instructions;
+    struct Instruction instructions [];
+} Program_t;
+
+struct Program * makeProgram (size_t n_instructions, struct Instruction * instructions) {
+    struct Program * p = malloc(sizeof(struct Program) + sizeof(struct Instruction)*n_instructions);
+    p->n_instructions = n_instructions;
+    memcpy(&(p->instructions), instructions, sizeof(struct Instruction)*n_instructions);
+    return p;
+}
+
+int run (struct Program const * prog) {
     int accumulator = 0;
     size_t pc = 0;
-    _Bool * run = calloc(n_instructions, sizeof(_Bool));
+    _Bool * already_run = calloc(prog->n_instructions, sizeof(_Bool));
     do {
-        ASSERT(pc < n_instructions);
-        if (run[pc]) {
+        ASSERT(pc < prog->n_instructions);
+        if (already_run[pc]) {
             break;
         }
-        run[pc] = 1;
-        switch (instructions[pc].op) {
+        already_run[pc] = 1;
+        switch (prog->instructions[pc].op) {
             case OP_NOP: {
                 ++pc;
             } break;
             case OP_ACC: {
-                accumulator += instructions[pc].arg;
+                accumulator += prog->instructions[pc].arg;
                 ++pc;
             } break;
             case OP_JMP: {
-                pc += instructions[pc].arg;
+                pc += prog->instructions[pc].arg;
             } break;
         }
     } while (1);
-    free(run);
+    free(already_run);
     return accumulator;
 }
 
@@ -69,5 +81,9 @@ int main (int argc, char ** argv) {
         }
     } while (1);
 
-    DISP(runProgram(n_instructions, instructions));
+    struct Program * program = makeProgram(n_instructions, instructions);
+    free(instructions);
+
+    int result = run(program);
+    DISP(result);
 }

@@ -4,47 +4,61 @@ typedef enum Operation {
     OP_NOP,
     OP_ACC,
     OP_JMP
-} Operation;
+} Operation_t;
 
 typedef struct Instruction {
-    Operation op;
+    enum Operation op;
     int arg;
 } Instruction_t;
 
-_Bool runProgram (size_t n_instructions, Instruction_t const * instructions, int * result) {
+typedef struct Program {
+    size_t n_instructions;
+    struct Instruction instructions [];
+} Program_t;
+
+struct Program * makeProgram (size_t n_instructions, struct Instruction * instructions) {
+    struct Program * p = malloc(sizeof(struct Program) + sizeof(struct Instruction)*n_instructions);
+    p->n_instructions = n_instructions;
+    memcpy(&(p->instructions), instructions, sizeof(struct Instruction)*n_instructions);
+    return p;
+}
+
+_Bool run (struct Program const * prog, int * result) {
+    _Bool terminated_normally = 0;
     int accumulator = 0;
-    int terminated_normally = 0;
     size_t pc = 0;
-    _Bool * run = calloc(n_instructions, sizeof(_Bool));
+    _Bool * already_run = calloc(prog->n_instructions, sizeof(_Bool));
     do {
-        if (pc == n_instructions) {
+        if (pc == prog->n_instructions) {
             terminated_normally = 1;
             break;
         }
-        if (pc > n_instructions) {
+        if (pc > prog->n_instructions) {
             break;
         }
-        if (run[pc]) {
+        if (already_run[pc]) {
             break;
         }
-        run[pc] = 1;
-        switch (instructions[pc].op) {
+        already_run[pc] = 1;
+        switch (prog->instructions[pc].op) {
             case OP_NOP: {
                 ++pc;
             } break;
             case OP_ACC: {
-                accumulator += instructions[pc].arg;
+                accumulator += prog->instructions[pc].arg;
                 ++pc;
             } break;
             case OP_JMP: {
-                pc += instructions[pc].arg;
+                pc += prog->instructions[pc].arg;
             } break;
         }
     } while (1);
-    free(run);
+    free(already_run);
+
     if (terminated_normally) {
-        ASSERT(result);
-        *result = accumulator;
+        if (result) {
+            *result = accumulator;
+        }
     }
     return terminated_normally;
 }
@@ -80,20 +94,23 @@ int main (int argc, char ** argv) {
         }
     } while (1);
 
-    for (size_t i = 0; i < n_instructions; ++i) {
-        if (instructions[i].op == OP_NOP || instructions[i].op == OP_JMP) {
-            Instruction_t tmp = instructions[i];
-            if (instructions[i].op == OP_NOP) {
-                instructions[i].op = OP_JMP;
+    struct Program * program = makeProgram(n_instructions, instructions);
+    free(instructions);
+
+    for (size_t i = 0; i < program->n_instructions; ++i) {
+        if (program->instructions[i].op == OP_NOP || program->instructions[i].op == OP_JMP) {
+            Instruction_t tmp = program->instructions[i];
+            if (program->instructions[i].op == OP_NOP) {
+                program->instructions[i].op = OP_JMP;
             } else {
-                instructions[i].op = OP_NOP;
+                program->instructions[i].op = OP_NOP;
             }
-            int acc;
-            if (runProgram(n_instructions, instructions, &acc)) {
-                DISP(acc);
+            int result;
+            if (run(program, &result)) {
+                DISP(result);
                 break;
             }
-            instructions[i] = tmp;
+            program->instructions[i] = tmp;
         }
     }
 }
