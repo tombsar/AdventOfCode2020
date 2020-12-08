@@ -25,5 +25,5 @@ int main (int argc, char ** argv) {
         id_max = MAX(id_max, id);
     } while (1);
 
-    DISP(id_max, "%zu");
+    DISP(id_max);
 }

@@ -61,5 +61,5 @@ int main (int argc, char ** argv) {
     size_t n_trees_1_2 = toboggan(&grid, 1, 2);
     size_t n_trees_product = n_trees_1_1 * n_trees_3_1 * n_trees_5_1 * n_trees_7_1 * n_trees_1_2;
 
-    DISP(n_trees_product, "%zu");
+    DISP(n_trees_product);
 }

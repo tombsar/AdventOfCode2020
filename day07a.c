@@ -116,5 +116,5 @@ int main (int argc, char ** argv) {
             ++total;
         }
     }
-    DISP(total, "%zu");
+    DISP(total);
 }

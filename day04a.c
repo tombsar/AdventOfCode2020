@@ -105,5 +105,5 @@ int main (int argc, char ** argv) {
         }
     } while (1);
 
-    DISP(n_valid, "%zu");
+    DISP(n_valid);
 }

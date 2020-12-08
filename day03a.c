@@ -56,5 +56,5 @@ int main (int argc, char ** argv) {
 
     size_t n_trees = toboggan(&grid, 3, 1);
 
-    DISP(n_trees, "%zu");
+    DISP(n_trees);
 }

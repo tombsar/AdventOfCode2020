@@ -17,7 +17,9 @@
 #define ASSERT(X)
 #endif
 
-#define DISP(X,FMT) do { printf("\033[1m%s:\033[0m In function <\033[1m%s\033[0m>\n\033[1m%s:%d: \033[36mdisp:\033[0m %s = ", __FILE__, __func__, __FILE__, __LINE__, #X); printf(FMT, X); printf("\n"); } while (0)
+#define FMT_FOR_TYPE(X) _Generic(X, char: "%c", int: "%i", long int: "%li", unsigned int: "%u", long unsigned int: "%lu")
+
+#define DISP(X) do { printf("\033[1m%s:\033[0m In function <\033[1m%s\033[0m>\n\033[1m%s:%d: \033[36mdisp:\033[0m %s = ", __FILE__, __func__, __FILE__, __LINE__, #X); printf(FMT_FOR_TYPE(X), X); printf("\n"); } while (0)
 
 typedef int8_t   s8;
 typedef int16_t  s16;

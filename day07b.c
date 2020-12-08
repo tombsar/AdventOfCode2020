@@ -121,5 +121,5 @@ int main (int argc, char ** argv) {
     intptr_t shiny_gold_id = glossary_add_c_string(&bag_type_glossary, "shiny gold");
 
     size_t total = countContents(shiny_gold_id);
-    DISP(total, "%zu");
+    DISP(total);
 }

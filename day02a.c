@@ -36,5 +36,5 @@ int main (int argc, char ** argv) {
         }
     } while (1);
 
-    DISP(n_valid, "%i");
+    DISP(n_valid);
 }

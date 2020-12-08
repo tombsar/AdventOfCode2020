@@ -35,5 +35,5 @@ int main (int argc, char ** argv) {
         ++i;
         ASSERT(i < 128*8);
     }
-    DISP(i, "%zu");
+    DISP(i);
 }
