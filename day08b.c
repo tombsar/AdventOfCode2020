@@ -13,17 +13,19 @@ typedef struct Instruction {
 
 _Bool runProgram (size_t n_instructions, Instruction_t const * instructions, int * result) {
     int accumulator = 0;
+    int terminated_normally = 0;
     size_t pc = 0;
     _Bool * run = calloc(n_instructions, sizeof(_Bool));
     do {
         if (pc == n_instructions) {
+            terminated_normally = 1;
             break;
         }
         if (pc > n_instructions) {
-            return 0;
+            break;
         }
         if (run[pc]) {
-            return 0;
+            break;
         }
         run[pc] = 1;
         switch (instructions[pc].op) {
@@ -40,8 +42,11 @@ _Bool runProgram (size_t n_instructions, Instruction_t const * instructions, int
         }
     } while (1);
     free(run);
-    *result = accumulator;
-    return 1;
+    if (terminated_normally) {
+        ASSERT(result);
+        *result = accumulator;
+    }
+    return terminated_normally;
 }
 
 int main (int argc, char ** argv) {
