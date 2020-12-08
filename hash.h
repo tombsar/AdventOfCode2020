@@ -67,14 +67,26 @@ void hashset_init (struct HashSet * h, size_t n_buckets) {
     }
 }
 
+void hashset_print (struct HashSet const * h) {
+    printf("HashSet with %zu buckets {\n", h->n_buckets);
+    for (size_t i = 0; i < h->n_buckets; ++i) {
+        printf("%5zu: {", i);
+        for (size_t j = 0; j < h->buckets[i].count; ++j) {
+            printf(" %zi", h->buckets[i].data[j]);
+        }
+        printf(" }\n");
+    }
+    printf("}\n");
+}
+
 void hashset_clear (struct HashSet * h) {
     for (size_t i = 0; i < h->n_buckets; ++i) {
         vector_clear(&(h->buckets[i]));
     }
 }
 
-void hashset_add (struct HashSet * h, s32 x) {
-    u32 bucket_index = hash32((u32)x) % h->n_buckets;
+void hashset_add (struct HashSet * h, intptr_t x) {
+    size_t bucket_index = hash64(x) % h->n_buckets;
     struct Vector * b = &(h->buckets[bucket_index]);
     ptrdiff_t i = vector_find_sorted(b, x);
     if (i < 0) {
@@ -82,8 +94,8 @@ void hashset_add (struct HashSet * h, s32 x) {
     }
 }
 
-void hashset_remove (struct HashSet * h, s32 x) {
-    u32 bucket_index = hash32((u32)x) % h->n_buckets;
+void hashset_remove (struct HashSet * h, intptr_t x) {
+    size_t bucket_index = hash64(x) % h->n_buckets;
     struct Vector * b = &(h->buckets[bucket_index]);
     ptrdiff_t i = vector_find_sorted(b, x);
     if (i >= 0) {
@@ -91,53 +103,9 @@ void hashset_remove (struct HashSet * h, s32 x) {
     }
 }
 
-_Bool hashset_contains (struct HashSet * h, s32 x) {
-    u32 bucket_index = hash32((u32)x) % h->n_buckets;
+_Bool hashset_contains (struct HashSet * h, intptr_t x) {
+    size_t bucket_index = hash64(x) % h->n_buckets;
     struct Vector * b = &(h->buckets[bucket_index]);
     ptrdiff_t i = vector_find_sorted(b, x);
-    return (i>=0);
-}
-
-typedef struct HashMap {
-    size_t n_buckets;
-    struct Vector * buckets;
-} HashSet_t;
-
-void hashmap_init (struct HashMap * h, size_t n_buckets) {
-    h->n_buckets = n_buckets;
-    h->buckets = malloc(n_buckets * sizeof(struct Vector));
-    for (size_t i = 0; i < n_buckets; ++i) {
-        vector_init(&(h->buckets[i]), 0);
-    }
-}
-
-void hashmap_clear (struct HashMap * h) {
-    for (size_t i = 0; i < h->n_buckets; ++i) {
-        vector_clear(&(h->buckets[i]));
-    }
-}
-
-void hashmap_add (struct HashMap * h, s32 x) {
-    u32 bucket_index = hash32((u32)x) % h->n_buckets;
-    struct Vector * b = &(h->buckets[bucket_index]);
-    ptrdiff_t i = vector_find_sorted(b, x);
-    if (i < 0) {
-        vector_insert_sorted(b, x);
-    }
-}
-
-void hashmap_remove (struct HashMap * h, s32 x) {
-    u32 bucket_index = hash32((u32)x) % h->n_buckets;
-    struct Vector * b = &(h->buckets[bucket_index]);
-    ptrdiff_t i = vector_find_sorted(b, x);
-    if (i >= 0) {
-        vector_erase(b, i);
-    }
-}
-
-_Bool hashmap_contains (struct HashMap * h, s32 x) {
-    u32 bucket_index = hash32((u32)x) % h->n_buckets;
-    struct Vector * b = &(h->buckets[bucket_index]);
-    ptrdiff_t i = vector_find_sorted(b, x);
-    return (i>=0);
+    return (i >= 0);
 }
