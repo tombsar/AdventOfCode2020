@@ -67,7 +67,7 @@ ptrdiff_t vector_find (struct Vector const * v, intptr_t x) {
     return -1;
 }
 
-ptrdiff_t vector_find_sorted (struct Vector * v, intptr_t x) {
+ptrdiff_t vector_find_sorted (struct Vector const * v, intptr_t x) {
     ASSERT(v);
     ASSERT(vector_is_sorted(v));
     if (v->count) {
