@@ -19,6 +19,13 @@ void vector_init (struct Vector * v, size_t capacity) {
     }
 }
 
+void vector_free (struct Vector * v) {
+    v->capacity = 0;
+    v->count = 0;
+    free(v->data);
+    v->data = 0;
+}
+
 struct Vector vector_copy (struct Vector const * v) {
     ASSERT(v);
     struct Vector vn;
