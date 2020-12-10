@@ -11,6 +11,10 @@ void intset_init (struct IntSet * set, size_t capacity) {
     vector_init(&set->values, capacity);
 }
 
+void intset_free (struct IntSet * set) {
+    vector_free(&set->values);
+}
+
 struct IntSet intset_copy (struct IntSet const * other) {
     struct IntSet set;
     set.values = vector_copy(&other->values);
@@ -29,6 +33,16 @@ size_t intset_count (struct IntSet const * set) {
 
 _Bool intset_is_empty (struct IntSet const * set) {
     return (set->values.count == 0);
+}
+
+intptr_t intset_min (struct IntSet const * set) {
+    ASSERT(set->values.count);
+    return (set->values.data[0]);
+}
+
+intptr_t intset_max (struct IntSet const * set) {
+    ASSERT(set->values.count);
+    return (set->values.data[set->values.count-1]);
 }
 
 void intset_print (struct IntSet const * set) {
