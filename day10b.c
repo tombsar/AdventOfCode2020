@@ -39,7 +39,7 @@ int main (int argc, char ** argv) {
     //intptr_t adapter_min = adapters.data[0];
     intptr_t adapter_max = intset_max(&adapters);
 
-    size_t * memo = calloc(intset_count(&adapters), adapter_max);
+    size_t * memo = calloc(adapter_max, sizeof(size_t));
     size_t combinations = countValidCombinations(0, adapter_max, intset_begin(&adapters), intset_end(&adapters), memo);
     DISP(combinations);
 }
