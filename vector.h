@@ -69,7 +69,7 @@ intptr_t vector_max (struct Vector const * v) {
     ASSERT(v->count);
     intptr_t maxval = v->data[0];
     for (size_t i = 1; i < v->count; ++i) {
-        maxval = MAX(minval, v->data[i]);
+        maxval = MAX(maxval, v->data[i]);
     }
     return maxval;
 }
