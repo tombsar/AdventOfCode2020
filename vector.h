@@ -54,6 +54,26 @@ intptr_t * vector_end (struct Vector const * v) {
     return v->data + v->count;
 }
 
+intptr_t vector_min (struct Vector const * v) {
+    ASSERT(v);
+    ASSERT(v->count);
+    intptr_t minval = v->data[0];
+    for (size_t i = 1; i < v->count; ++i) {
+        minval = MIN(minval, v->data[i]);
+    }
+    return minval;
+}
+
+intptr_t vector_max (struct Vector const * v) {
+    ASSERT(v);
+    ASSERT(v->count);
+    intptr_t maxval = v->data[0];
+    for (size_t i = 1; i < v->count; ++i) {
+        maxval = MAX(minval, v->data[i]);
+    }
+    return maxval;
+}
+
 _Bool vector_is_sorted (struct Vector const * v) {
     ASSERT(v);
     for (size_t i = 1; i < v->count; ++i) {
