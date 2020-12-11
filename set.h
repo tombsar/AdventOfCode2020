@@ -17,13 +17,13 @@ void intset_free (struct IntSet * set) {
 
 struct IntSet intset_copy (struct IntSet const * other) {
     struct IntSet set;
-    set.values = vector_copy(&other->values);
+    vector_copy(&set.values, &other->values);
     return set;
 }
 
 struct IntSet intset_move (struct IntSet * other) {
     struct IntSet set;
-    set.values = vector_move(&other->values);
+    vector_move(&set.values, &other->values);
     return set;
 }
 

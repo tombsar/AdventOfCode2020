@@ -26,22 +26,23 @@ void vector_free (struct Vector * v) {
     v->data = 0;
 }
 
-struct Vector vector_copy (struct Vector const * v) {
-    ASSERT(v);
-    struct Vector vn;
-    vector_init(&vn, v->capacity);
-    memcpy(vn.data, v->data, v->count * sizeof(intptr_t));
-    vn.count = v->count;
-    return vn;
+void vector_copy (struct Vector * dest, struct Vector const * src) {
+    ASSERT(dest);
+    ASSERT(src);
+    vector_init(dest, src->capacity);
+    memcpy(dest->data, src->data, src->count * sizeof(intptr_t));
+    dest->count = src->count;
 }
 
-struct Vector vector_move (struct Vector * v) {
-    ASSERT(v);
-    struct Vector vn = *v;
-    v->capacity = 0;
-    v->count = 0;
-    v->data = NULL;
-    return vn;
+void vector_move (struct Vector * dest, struct Vector * src) {
+    ASSERT(dest);
+    ASSERT(src);
+    dest->capacity = src->capacity;
+    dest->count = src->count;
+    dest->data = src->data;
+    src->capacity = 0;
+    src->count = 0;
+    src->data = NULL;
 }
 
 intptr_t * vector_begin (struct Vector const * v) {
