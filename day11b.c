@@ -5,6 +5,16 @@ typedef struct SeatGrid {
     size_t n_rows, n_cols;
 } SeatGrid_t;
 
+void seatgrid_init (struct SeatGrid * grid, size_t n_rows, size_t n_cols) {
+    if (n_rows && n_cols) {
+        grid->grid = calloc(n_rows*n_cols, 1);
+    } else {
+        grid->grid = NULL;
+    }
+    grid->n_rows = n_rows;
+    grid->n_cols = n_cols;
+}
+
 _Bool isInGrid (struct SeatGrid const * grid, intptr_t r, intptr_t c) {
     return (r >= 0 && (size_t)r < grid->n_rows && c >= 0  && (size_t)c < grid->n_cols);
 }
@@ -28,6 +38,7 @@ void seatgrid_free (struct SeatGrid * grid) {
 }
 
 void seatgrid_push_row (struct SeatGrid * grid, char const * data) {
+    ASSERT(strlen(data) == grid->n_cols);
     seatgrid_resize(grid, grid->n_rows+1, grid->n_cols);
     memcpy(&(grid->grid[(grid->n_rows-1)*grid->n_cols]), data, grid->n_cols);
 }
@@ -51,16 +62,16 @@ void seatgrid_print (struct SeatGrid const * grid) {
     }
 }
 
-_Bool isOccupied (struct SeatGrid const * grid, intptr_t r, intptr_t c) {
+_Bool seatgrid_is_occupied (struct SeatGrid const * grid, intptr_t r, intptr_t c) {
     ASSERT(isInGrid(grid, r, c));
     return (seatgrid_get(grid, r, c) == '#');
 }
 
-size_t countOccupied (struct SeatGrid const * grid) {
+size_t seatgrid_occupied_count (struct SeatGrid const * grid) {
     size_t n = 0;
     for (size_t r = 0; r < grid->n_rows; ++r) {
         for (size_t c = 0; c < grid->n_cols; ++c) {
-            if (isOccupied(grid, r, c)) {
+            if (seatgrid_is_occupied(grid, r, c)) {
                 ++n;
             }
         }
@@ -70,15 +81,16 @@ size_t countOccupied (struct SeatGrid const * grid) {
 
 _Bool checkInDirection (struct SeatGrid const * grid, intptr_t r, intptr_t c, intptr_t dr, intptr_t dc) {
     ASSERT(isInGrid(grid, r, c));
-    r += dr;
-    c += dc;
-    while (isInGrid(grid, r, c) && seatgrid_get(grid, r, c) == '.') {
+
+    do {
         r += dr;
         c += dc;
-    }
+    } while (isInGrid(grid, r, c) && seatgrid_get(grid, r, c) == '.');
+
     if (isInGrid(grid, r, c)) {
-        return isOccupied(grid, r, c);
+        return seatgrid_is_occupied(grid, r, c);
     }
+
     return 0;
 }
 
@@ -128,19 +140,18 @@ size_t simulate (struct SeatGrid * state) {
 }
 
 int main (int argc, char ** argv) {
-    SeatGrid_t grid = {};
+    SeatGrid_t grid;
 
     char buf [256];
     scanf("%255s", &(buf[0]));
 
-    grid.n_cols = strlen(&(buf[0]));
-
-    seatgrid_push_row(&grid, buf);
+    seatgrid_init(&grid, 0, strlen(&(buf[0])));
+    seatgrid_push_row(&grid, &(buf[0]));
 
     do {
         int ret = scanf("%255s", &(buf[0]));
         if (ret == 1) {
-            seatgrid_push_row(&grid, buf);
+            seatgrid_push_row(&grid, &(buf[0]));
         } else if (ret == EOF) {
             break;
         } else {
@@ -155,6 +166,6 @@ int main (int argc, char ** argv) {
         //printf("\n");
     } while (n_changes);
 
-    size_t n_occupied = countOccupied(&grid);
+    size_t n_occupied = seatgrid_occupied_count(&grid);
     DISP(n_occupied);
 }
