@@ -15,16 +15,12 @@ void intset_free (struct IntSet * set) {
     vector_free(&set->values);
 }
 
-struct IntSet intset_copy (struct IntSet const * other) {
-    struct IntSet set;
-    vector_copy(&set.values, &other->values);
-    return set;
+void intset_copy (struct IntSet * dest, struct IntSet const * src) {
+    vector_copy(&dest->values, &src->values);
 }
 
-struct IntSet intset_move (struct IntSet * other) {
-    struct IntSet set;
-    vector_move(&set.values, &other->values);
-    return set;
+void intset_move (struct IntSet * dest, struct IntSet * src) {
+    vector_move(&dest->values, &src->values);
 }
 
 size_t intset_count (struct IntSet const * set) {
@@ -88,12 +84,12 @@ struct IntSet intset_union (struct IntSet const * a, struct IntSet const * b) {
     struct IntSet result;
     // TODO: Is it faster to add more elements to a smaller set, or fewer elements to a larger set?
     if (intset_count(a) >= intset_count(b)) {
-        result = intset_copy(a);
+        intset_copy(&result, a);
         for (intptr_t const * it = intset_begin(b); it != intset_end(b); ++it) {
             intset_add(&result, *it);
         }
     } else {
-        result = intset_copy(b);
+        intset_copy(&result, b);
         for (intptr_t const * it = intset_begin(a); it != intset_end(a); ++it) {
             intset_add(&result, *it);
         }
