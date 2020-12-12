@@ -22,7 +22,7 @@ int main (int argc, char ** argv) {
     intptr_t hist [3] = {};
 
     intptr_t last = 0;
-    for (intptr_t * it = intset_begin(&adapters); it != intset_end(&adapters); ++it) {
+    for (intptr_t const * it = intset_cbegin(&adapters); it != intset_cend(&adapters); ++it) {
         intptr_t diff = *it - last;
         ASSERT(diff == 1 || diff == 2 || diff == 3);
         hist[diff-1] += 1;

@@ -45,12 +45,22 @@ void vector_move (struct Vector * dest, struct Vector * src) {
     src->data = NULL;
 }
 
-intptr_t * vector_begin (struct Vector const * v) {
+intptr_t const * vector_cbegin (struct Vector const * v) {
     ASSERT(v);
     return v->data;
 }
 
-intptr_t * vector_end (struct Vector const * v) {
+intptr_t const * vector_cend (struct Vector const * v) {
+    ASSERT(v);
+    return v->data + v->count;
+}
+
+intptr_t * vector_begin (struct Vector * v) {
+    ASSERT(v);
+    return v->data;
+}
+
+intptr_t * vector_end (struct Vector * v) {
     ASSERT(v);
     return v->data + v->count;
 }
