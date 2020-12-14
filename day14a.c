@@ -57,9 +57,7 @@ int main (int argc, char ** argv) {
 
         if (sv_equals(&target, "mask")) {
             ASSERT(sv_length(&value) == 36);
-            for (size_t i = 0; i < 36; ++i) {
-                bitmask[i] = value.start[i];
-            }
+            strncpy(bitmask, value.start, 36);
         } else {
             StringView_t mem = sv_eat_until_punctuation(&target);
             ASSERT(sv_equals(&mem, "mem"));
@@ -80,7 +78,7 @@ int main (int argc, char ** argv) {
     } while (1);
 
     size_t sum = 0;
-    for (IntMapElement_t const * it = intmap_cbegin(&memory); it != intmap_cend(&memory); ++it) {
+    for (IntMapElement_t const * it = intmap_cbegin(&memory), * end = intmap_cend(&memory); it != end; ++it) {
         sum += it->value;
     }
 
