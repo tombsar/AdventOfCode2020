@@ -2,12 +2,14 @@
 #include "vector.h"
 #include "map.h"
 
+size_t const N_ROUNDS = 30000000;
+
 int main (int argc, char ** argv) {
     Vector_t nums;
-    vector_init(&nums, 0);
+    vector_init(&nums, N_ROUNDS);
 
     IntMap_t last;
-    intmap_init(&last, 0);
+    intmap_init(&last, N_ROUNDS);
 
     do {
         long int x;
@@ -22,24 +24,21 @@ int main (int argc, char ** argv) {
         }
     } while (1);
 
-    intptr_t x_index = -1;
-    while (nums.count < 30000000) {
+    ptrdiff_t x_index = -1;
+    while (nums.count < N_ROUNDS) {
         long int y = 0;
         if (x_index != -1) {
             y = nums.count - 1 - x_index;
         }
-        intptr_t ind = intmap_find(&last, y);
+        ptrdiff_t ind = intmap_find(&last, y);
         if (ind != -1) {
-            x_index = last.data[ind].value;
+            x_index = last.values[ind];
+            last.values[ind] = nums.count;
         } else {
             x_index = -1;
+            intmap_set(&last, y, nums.count);
         }
-        intmap_set(&last, y, nums.count);
         vector_push_back(&nums, y);
-
-        if (!(nums.count % 1000000)) {
-            printf("%zu...\n", nums.count);
-        }
     }
     DISP(nums.data[nums.count-1]);
 }

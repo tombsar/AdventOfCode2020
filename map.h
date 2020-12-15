@@ -1,14 +1,10 @@
 #pragma once
 
-typedef struct IntMapElement {
-    intptr_t key;
-    intptr_t value;
-} IntMapElement_t;
-
 typedef struct IntMap {
     size_t capacity;
     size_t count;
-    struct IntMapElement * data;
+    intptr_t * keys;
+    intptr_t * values;
 } IntMap_t;
 
 
@@ -17,24 +13,29 @@ void intmap_init (struct IntMap * map, size_t capacity) {
     map->capacity = capacity;
     map->count = 0;
     if (capacity) {
-        map->data = calloc(capacity, sizeof(struct IntMapElement));
+        map->keys = calloc(capacity, sizeof(intptr_t));
+        map->values = calloc(capacity, sizeof(intptr_t));
     } else {
-        map->data = NULL;
+        map->keys = NULL;
+        map->values = NULL;
     }
 }
 
 void intmap_free (struct IntMap * map) {
     map->capacity = 0;
     map->count = 0;
-    free(map->data);
-    map->data = NULL;
+    free(map->keys);
+    map->keys = NULL;
+    free(map->values);
+    map->values = NULL;
 }
 
 void intmap_resize (struct IntMap * map, size_t capacity) {
     if (capacity) {
         map->capacity = capacity;
         map->count = MIN(map->count, capacity);
-        map->data = realloc(map->data, capacity*sizeof(struct IntMapElement));
+        map->keys = realloc(map->keys, capacity*sizeof(intptr_t));
+        map->values = realloc(map->values, capacity*sizeof(intptr_t));
     } else {
         intmap_free(map);
     }
@@ -44,7 +45,8 @@ void intmap_copy (struct IntMap * dest, struct IntMap const * src) {
     ASSERT(dest);
     ASSERT(src);
     intmap_init(dest, src->capacity);
-    memcpy(dest->data, src->data, src->count * sizeof(struct IntMapElement));
+    memcpy(dest->keys, src->keys, src->count * sizeof(intptr_t));
+    memcpy(dest->values, src->values, src->count * sizeof(intptr_t));
     dest->count = src->count;
 }
 
@@ -53,10 +55,12 @@ void intmap_move (struct IntMap * dest, struct IntMap * src) {
     ASSERT(src);
     dest->capacity = src->capacity;
     dest->count = src->count;
-    dest->data = src->data;
+    dest->keys = src->keys;
+    dest->values = src->values;
     src->capacity = 0;
     src->count = 0;
-    src->data = NULL;
+    src->keys = NULL;
+    src->values = NULL;
 }
 
 void intmap_grow (struct IntMap * map) {
@@ -76,36 +80,32 @@ void intmap_ensure_capacity (struct IntMap * map, size_t capacity) {
 void intmap_print (struct IntMap const * map) {
     printf("IntMap with %zu elements: {\n", map->count);
     for (size_t i = 0; i < map->count; ++i) {
-        printf("%8zi -> %zi\n", map->data[i].key, map->data[i].value);
+        printf("%8zi -> %zi\n", map->keys[i], map->values[i]);
     }
     printf("}\n");
 }
 
-struct IntMapElement const * intmap_cbegin (struct IntMap const * map) {
-    return &(map->data[0]);
-}
-
-struct IntMapElement const * intmap_cend (struct IntMap const * map) {
-    return &(map->data[map->count]);
-}
-
-intptr_t intmap_find (struct IntMap const * map, intptr_t key) {
+ptrdiff_t intmap_find (struct IntMap const * map, intptr_t key) {
     if (map->count) {
-        if (key < map->data[0].key || key > map->data[map->count-1].key) {
-            return -1;
-        } else {
-            intptr_t il = 0;
-            intptr_t iu = map->count;
-            while (iu > il) {
-                intptr_t im = il + (iu-il)/2;
-                intptr_t km = map->data[im].key;
+        if (key >= map->keys[0] && key <= map->keys[map->count-1]) {
+            intptr_t const * pl = &(map->keys[0]);
+            intptr_t const * pu = &(map->keys[map->count]);
+            while ((pu-pl) > 16) {
+                intptr_t const * pm = pl + (pu-pl)/2;
+                intptr_t km = *pm;
                 if (key < km) {
-                    iu = im;
+                    pu = pm;
                 } else if (key > km) {
-                    il = im+1;
+                    pl = pm+1;
                 } else {
-                    return im;
+                    return (pm-&(map->keys[0]));
                 }
+            }
+            while (*pl < key) {
+                ++pl;
+            }
+            if (*pl == key) {
+                return (pl-&(map->keys[0]));
             }
         }
     }
@@ -113,51 +113,51 @@ intptr_t intmap_find (struct IntMap const * map, intptr_t key) {
 }
 
 intptr_t intmap_get (struct IntMap const * map, intptr_t key) {
-    intptr_t id = intmap_find(map, key);
-    if (id >= 0) {
-        return map->data[id].value;
+    ptrdiff_t ind = intmap_find(map, key);
+    if (ind >= 0) {
+        return map->values[ind];
     }
     return 0;
 }
 
-struct IntMapElement * intmap_insert (struct IntMap * map, size_t index, intptr_t key, intptr_t value) {
+void intmap_insert (struct IntMap * map, size_t index, intptr_t key, intptr_t value) {
     ASSERT(index <= map->count);
     intmap_ensure_capacity(map, map->count+1);
     if (index != map->count) {
-        memmove(&(map->data[index+1]), &(map->data[index]), (map->count - index)*sizeof(struct IntMapElement));
+        memmove(&(map->keys[index+1]), &(map->keys[index]), (map->count - index)*sizeof(intptr_t));
+        memmove(&(map->values[index+1]), &(map->values[index]), (map->count - index)*sizeof(intptr_t));
     }
-    map->data[index].key = key;
-    map->data[index].value = value;
+    map->keys[index] = key;
+    map->values[index] = value;
     map->count += 1;
-    return &(map->data[index]);
 }
 
 void intmap_set (struct IntMap * map, intptr_t key, intptr_t value) {
     if (map->count) {
-        size_t ind = 0;
-        if (key < map->data[0].key) {
+        ptrdiff_t ind = 0;
+        if (key < map->keys[0]) {
             ind = 0;
-        } else if (key > map->data[map->count-1].key) {
+        } else if (key > map->keys[map->count-1]) {
             ind = map->count;
         } else {
-            size_t il = 0;
-            size_t iu = map->count-1;
-            while ((iu-il) > 1) {
-                size_t im = il+(iu-il)/2;
-                intptr_t km = map->data[im].key;
+            intptr_t const * pl = &(map->keys[0]);
+            intptr_t const * pu = &(map->keys[map->count-1]);
+            while ((pu-pl) > 1) {
+                intptr_t const * pm = pl + (pu-pl)/2;
+                intptr_t km = *pm;
                 if (key > km) {
-                    il = im;
+                    pl = pm;
                 } else if (key < km) {
-                    iu = im;
+                    pu = pm;
                 } else {
-                    il = (iu = im);
+                    pl = (pu = pm);
                     break;
                 }
             }
-            ind = iu;
+            ind = (pu-&(map->keys[0]));
         }
-        if (map->data[ind].key == key) {
-            map->data[ind].value = value;
+        if (map->keys[ind] == key) {
+            map->values[ind] = value;
         } else {
             intmap_insert(map, ind, key, value);
         }

@@ -97,8 +97,8 @@ int main (int argc, char ** argv) {
     } while (1);
 
     size_t sum = 0;
-    for (IntMapElement_t const * it = intmap_cbegin(&memory), * end = intmap_cend(&memory); it != end; ++it) {
-        sum += it->value;
+    for (size_t i = 0; i < memory.count; ++i) {
+        sum += memory.values[i];
     }
 
     DISP(sum);
