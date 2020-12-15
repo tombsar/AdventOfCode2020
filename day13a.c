@@ -2,11 +2,11 @@
 #include "vector.h"
 #include "stringview.h"
 
-inline _Bool isOdd (u64 x) {
+_Bool isOdd (u64 x) {
     return !!(x&1);
 }
 
-inline _Bool isEven (u64 x) {
+_Bool isEven (u64 x) {
     return !(x&1);
 }
 
