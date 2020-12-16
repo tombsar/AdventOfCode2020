@@ -42,7 +42,7 @@ void sv_print (struct StringView const * s) {
     for (char const * p = s->start; p < s->end; ++p) {
         putchar(*p);
     }
-    putchar('"');
+    puts("\"\n");
 }
 
 char const * sv_make_c_string (struct StringView const * s) {
