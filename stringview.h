@@ -49,6 +49,16 @@ char const * sv_make_c_string (struct StringView const * s) {
     return make_c_string(s->start, s->end);
 }
 
+size_t sv_count (struct StringView * s, char c) {
+    size_t n = 0;
+    for (char const * it = s->start, * end = s->end; it != end; ++it) {
+        if (*it == c) {
+            n += 1;
+        }
+    }
+    return n;
+}
+
 char sv_eat_char (struct StringView * s) {
     char c = s->start[0];
     s->start = &(s->start[1]);
