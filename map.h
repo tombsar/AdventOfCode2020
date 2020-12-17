@@ -81,7 +81,7 @@ void intmap_ensure_capacity (struct IntMap * map, size_t capacity) {
 void intmap_print (struct IntMap const * map) {
     printf("IntMap with %zu elements: {\n", map->count);
     for (size_t i = 0; i < map->count; ++i) {
-        printf("%8zi -> %zi\n", map->keys[i], map->values[i]);
+        printf("%8zi => %zi\n", map->keys[i], map->values[i]);
     }
     printf("}\n");
 }
@@ -159,6 +159,8 @@ void intmap_set (struct IntMap * map, intptr_t key, intptr_t value) {
     }
 }
 
+// TODO: intmap_remove
+
 typedef struct IntHashMap {
     size_t n_bins;
     struct IntMap * bins;
@@ -181,6 +183,14 @@ void inthashmap_free (struct IntHashMap * map) {
     free(map->bins);
     map->bins = NULL;
     map->n_bins = 0;
+}
+
+size_t inthashmap_count (struct IntHashMap const * set) {
+    size_t n = 0;
+    for (size_t i = 0; i < set->n_bins; ++i) {
+        n += set->bins[i].count;
+    }
+    return n;
 }
 
 _Bool inthashmap_contains (struct IntHashMap const * map, intptr_t key) {
