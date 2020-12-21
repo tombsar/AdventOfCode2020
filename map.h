@@ -108,6 +108,10 @@ ptrdiff_t intmap_find (struct IntMap const * map, intptr_t key) {
     return -1;
 }
 
+_Bool intmap_contains (struct IntMap const * map, intptr_t key) {
+    return (intmap_find(map, key) >= 0);
+}
+
 intptr_t intmap_get (struct IntMap const * map, intptr_t key) {
     ptrdiff_t ind = intmap_find(map, key);
     if (ind >= 0) {
