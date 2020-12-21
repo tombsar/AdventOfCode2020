@@ -177,6 +177,56 @@ void intset_remove (struct IntSet * set, intptr_t value) {
     set->count -= 1;
 }
 
+struct IntSet intset_union (struct IntSet const * a, struct IntSet const * b) {
+    ASSERT(a && b);
+    struct IntSet result;
+    // TODO: Is it faster to add more elements to a smaller set, or fewer elements to a larger set?
+    if (a->count >= b->count) {
+        intset_copy(&result, a);
+        for (intptr_t const * it = intset_cbegin(b); it != intset_cend(b); ++it) {
+            intset_add(&result, *it);
+        }
+    } else {
+        intset_copy(&result, b);
+        for (intptr_t const * it = intset_cbegin(a); it != intset_cend(a); ++it) {
+            intset_add(&result, *it);
+        }
+    }
+    return result;
+}
+
+struct IntSet intset_intersection (struct IntSet const * a, struct IntSet const * b) {
+    ASSERT(a && b);
+    struct IntSet result;
+    intset_init(&result, 0);
+    if (a->count >= b->count) {
+        for (intptr_t const * it = intset_cbegin(b); it != intset_cend(b); ++it) {
+            if (intset_contains(a, *it)) {
+                intset_add(&result, *it);
+            }
+        }
+    } else {
+        for (intptr_t const * it = intset_cbegin(a); it != intset_cend(a); ++it) {
+            if (intset_contains(b, *it)) {
+                intset_add(&result, *it);
+            }
+        }
+    }
+    return result;
+}
+
+struct IntSet intset_difference (struct IntSet const * a, struct IntSet const * b) {
+    ASSERT(a && b);
+    struct IntSet result;
+    intset_init(&result, 0);
+    for (intptr_t const * it = intset_cbegin(a); it != intset_cend(a); ++it) {
+        if (!intset_contains(b, *it)) {
+            intset_add(&result, *it);
+        }
+    }
+    return result;
+}
+
 typedef struct IntHashSet {
     size_t n_bins;
     struct IntSet * bins;
