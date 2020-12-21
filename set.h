@@ -169,7 +169,13 @@ void intset_add (struct IntSet * set, intptr_t value) {
     }
 }
 
-// TODO: intset_remove
+void intset_remove (struct IntSet * set, intptr_t value) {
+    ptrdiff_t index = intset_find(set, value);
+    if (index >= 0 && ((size_t)index+1) < set->count) {
+        memmove(&(set->values[index]), &(set->values[index+1]), (set->count - index)*sizeof(intptr_t));
+    }
+    set->count -= 1;
+}
 
 typedef struct IntHashSet {
     size_t n_bins;
