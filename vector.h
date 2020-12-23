@@ -238,7 +238,7 @@ void vector_erase (struct Vector * v, size_t i) {
     } else {
         v->count -= 1;
         if (v->count) {
-            memmove(&(v->data[i]), &(v->data[i+1]), v->count*sizeof(intptr_t));
+            memmove(&(v->data[i]), &(v->data[i+1]), (v->count-i)*sizeof(intptr_t));
         }
     }
 }
