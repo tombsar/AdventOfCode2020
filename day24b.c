@@ -60,8 +60,8 @@ void offset (s32 * q, s32 * r, enum Direction direction, s32 distance) {
 }
 
 int main (int argc, char ** argv) {
-    IntSet_t tiles;
-    intset_init(&tiles, 512);
+    Set_t tiles;
+    set_init(&tiles, 512);
 
     do {
         char buf [BUFSIZ];
@@ -105,20 +105,20 @@ int main (int argc, char ** argv) {
 
         s64 coordval = pack(q, r);
 
-        if (intset_contains(&tiles, coordval)) {
-            intset_remove(&tiles, coordval);
+        if (set_contains(&tiles, coordval)) {
+            set_remove(&tiles, coordval);
         } else {
-            intset_add(&tiles, coordval);
+            set_add(&tiles, coordval);
         }
     } while (1);
 
     for (int day = 0; day < 100; ++day) {
-        IntSet_t tiles_new;
-        intset_copy(&tiles_new, &tiles);
+        Set_t tiles_new;
+        set_copy(&tiles_new, &tiles);
 
         s32 qmin = INT32_MAX, qmax = INT32_MIN;
         s32 rmin = INT32_MAX, rmax = INT32_MIN;
-        for (intptr_t const * it = intset_cbegin(&tiles); it != intset_cend(&tiles); ++it) {
+        for (intptr_t const * it = set_cbegin(&tiles); it != set_cend(&tiles); ++it) {
             s32 q, r;
             unpack(*it, &q, &r);
             qmin = MIN(qmin, q);
@@ -134,25 +134,25 @@ int main (int argc, char ** argv) {
                     s32 qn = q;
                     s32 rn = r;
                     offset(&qn, &rn, dir, 1);
-                    if (intset_contains(&tiles, pack(qn, rn))) {
+                    if (set_contains(&tiles, pack(qn, rn))) {
                         ++n_neighbours;
                     }
                 }
                 s64 coordval = pack(q, r);
-                if (intset_contains(&tiles, coordval)) {
+                if (set_contains(&tiles, coordval)) {
                     if (n_neighbours == 0 || n_neighbours > 2) {
-                        intset_remove(&tiles_new, coordval);
+                        set_remove(&tiles_new, coordval);
                     }
                 } else {
                     if (n_neighbours == 2) {
-                        intset_add(&tiles_new, coordval);
+                        set_add(&tiles_new, coordval);
                     }
                 }
             }
         }
 
-        intset_free(&tiles);
-        intset_move(&tiles, &tiles_new);
+        set_free(&tiles);
+        set_move(&tiles, &tiles_new);
     }
 
     DISP(tiles.count);

@@ -60,8 +60,8 @@ void offset (s32 * q, s32 * r, enum Direction direction, s32 distance) {
 }
 
 int main (int argc, char ** argv) {
-    IntSet_t tiles;
-    intset_init(&tiles, 512);
+    Set_t tiles;
+    set_init(&tiles, 512);
 
     do {
         char buf [BUFSIZ];
@@ -105,10 +105,10 @@ int main (int argc, char ** argv) {
 
         s64 coordval = pack(q, r);
 
-        if (intset_contains(&tiles, coordval)) {
-            intset_remove(&tiles, coordval);
+        if (set_contains(&tiles, coordval)) {
+            set_remove(&tiles, coordval);
         } else {
-            intset_add(&tiles, coordval);
+            set_add(&tiles, coordval);
         }
     } while (1);
 

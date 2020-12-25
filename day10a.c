@@ -2,13 +2,13 @@
 #include "set.h"
 
 int main (int argc, char ** argv) {
-    IntSet_t adapters;
-    intset_init(&adapters, 128);
+    Set_t adapters;
+    set_init(&adapters, 128);
     do {
         intptr_t in;
         int ret = scanf("%zi", &in);
         if (ret == 1) {
-            intset_add(&adapters, in);
+            set_add(&adapters, in);
         } else if (ret == EOF) {
             break;
         } else {
@@ -17,12 +17,12 @@ int main (int argc, char ** argv) {
     } while (1);
 
     //intptr_t adapter_min = adapters.data[0];
-    intptr_t adapter_max = intset_max(&adapters);
+    intptr_t adapter_max = set_max(&adapters);
 
     intptr_t hist [3] = {};
 
     intptr_t last = 0;
-    for (intptr_t const * it = intset_cbegin(&adapters); it != intset_cend(&adapters); ++it) {
+    for (intptr_t const * it = set_cbegin(&adapters); it != set_cend(&adapters); ++it) {
         intptr_t diff = *it - last;
         ASSERT(diff == 1 || diff == 2 || diff == 3);
         hist[diff-1] += 1;

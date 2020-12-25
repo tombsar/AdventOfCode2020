@@ -2,13 +2,13 @@
 
 #include "hash.h"
 
-typedef struct IntSet {
+typedef struct Set {
     size_t capacity;
     size_t count;
     intptr_t * values;
-} IntSet_t;
+} Set_t;
 
-void intset_init (struct IntSet * set, size_t capacity) {
+void set_init (struct Set * set, size_t capacity) {
     ASSERT(set);
     set->capacity = capacity;
     set->count = 0;
@@ -19,32 +19,32 @@ void intset_init (struct IntSet * set, size_t capacity) {
     }
 }
 
-void intset_free (struct IntSet * set) {
+void set_free (struct Set * set) {
     set->capacity = 0;
     set->count = 0;
     free(set->values);
     set->values = NULL;
 }
 
-void intset_resize (struct IntSet * set, size_t capacity) {
+void set_resize (struct Set * set, size_t capacity) {
     if (capacity) {
         set->capacity = capacity;
         set->count = MIN(set->count, capacity);
         set->values = realloc(set->values, capacity*sizeof(intptr_t));
     } else {
-        intset_free(set);
+        set_free(set);
     }
 }
 
-void intset_copy (struct IntSet * dest, struct IntSet const * src) {
+void set_copy (struct Set * dest, struct Set const * src) {
     ASSERT(dest);
     ASSERT(src);
-    intset_init(dest, src->capacity);
+    set_init(dest, src->capacity);
     memcpy(dest->values, src->values, src->count * sizeof(intptr_t));
     dest->count = src->count;
 }
 
-void intset_move (struct IntSet * dest, struct IntSet * src) {
+void set_move (struct Set * dest, struct Set * src) {
     ASSERT(dest);
     ASSERT(src);
     dest->capacity = src->capacity;
@@ -55,57 +55,57 @@ void intset_move (struct IntSet * dest, struct IntSet * src) {
     src->values = NULL;
 }
 
-void intset_grow (struct IntSet * set) {
+void set_grow (struct Set * set) {
     ASSERT(set);
     size_t capacity = set->capacity;
     capacity = capacity + MAX(capacity / 2, 1);
-    intset_resize(set, capacity);
+    set_resize(set, capacity);
 }
 
-void intset_ensure_capacity (struct IntSet * set, size_t capacity) {
+void set_ensure_capacity (struct Set * set, size_t capacity) {
     ASSERT(set);
     while (set->capacity < capacity) {
-        intset_grow(set);
+        set_grow(set);
     }
 }
 
-intptr_t intset_min (struct IntSet const * set) {
+intptr_t set_min (struct Set const * set) {
     ASSERT(set);
     ASSERT(set->count);
     return set->values[0];
 }
 
-intptr_t intset_max (struct IntSet const * set) {
+intptr_t set_max (struct Set const * set) {
     ASSERT(set);
     ASSERT(set->count);
     return set->values[set->count-1];
 }
 
-intptr_t * intset_begin (struct IntSet * set) {
+intptr_t * set_begin (struct Set * set) {
     return &(set->values[0]);
 }
 
-intptr_t * intset_end (struct IntSet * set) {
+intptr_t * set_end (struct Set * set) {
     return &(set->values[set->count]);
 }
 
-intptr_t const * intset_cbegin (struct IntSet const * set) {
+intptr_t const * set_cbegin (struct Set const * set) {
     return &(set->values[0]);
 }
 
-intptr_t const * intset_cend (struct IntSet const * set) {
+intptr_t const * set_cend (struct Set const * set) {
     return &(set->values[set->count]);
 }
 
-void intset_print (struct IntSet const * set) {
-    printf("IntSet with %zu elements: {\n", set->count);
+void set_print (struct Set const * set) {
+    printf("Set with %zu elements: {\n", set->count);
     for (size_t i = 0; i < set->count; ++i) {
         printf("%8zi\n", set->values[i]);
     }
     printf("}\n");
 }
 
-ptrdiff_t intset_find (struct IntSet const * set, intptr_t value) {
+ptrdiff_t set_find (struct Set const * set, intptr_t value) {
     if (set->count) {
         if (value >= set->values[0] && value <= set->values[set->count-1]) {
             intptr_t const * pl = &(set->values[0]);
@@ -127,13 +127,13 @@ ptrdiff_t intset_find (struct IntSet const * set, intptr_t value) {
     return -1;
 }
 
-intptr_t intset_contains (struct IntSet const * set, intptr_t value) {
-    return (intset_find(set, value) != -1);
+intptr_t set_contains (struct Set const * set, intptr_t value) {
+    return (set_find(set, value) != -1);
 }
 
-void intset_insert (struct IntSet * set, size_t index, intptr_t value) {
+void set_insert (struct Set * set, size_t index, intptr_t value) {
     ASSERT(index <= set->count);
-    intset_ensure_capacity(set, set->count+1);
+    set_ensure_capacity(set, set->count+1);
     if (index != set->count) {
         memmove(&(set->values[index+1]), &(set->values[index]), (set->count - index)*sizeof(intptr_t));
     }
@@ -141,12 +141,12 @@ void intset_insert (struct IntSet * set, size_t index, intptr_t value) {
     set->count += 1;
 }
 
-void intset_add (struct IntSet * set, intptr_t value) {
+void set_add (struct Set * set, intptr_t value) {
     if (set->count) {
         if (value < set->values[0]) {
-            intset_insert(set, 0, value);
+            set_insert(set, 0, value);
         } else if (value > set->values[set->count-1]) {
-            intset_insert(set, set->count, value);
+            set_insert(set, set->count, value);
         } else {
             intptr_t const * pl = &(set->values[0]);
             intptr_t const * pu = &(set->values[set->count]);
@@ -161,107 +161,107 @@ void intset_add (struct IntSet * set, intptr_t value) {
             }
             ptrdiff_t ind = pl - &(set->values[0]);
             if (*pl != value) {
-                intset_insert(set, ind+1, value);
+                set_insert(set, ind+1, value);
             }
         }
     } else {
-        intset_insert(set, 0, value);
+        set_insert(set, 0, value);
     }
 }
 
-void intset_remove (struct IntSet * set, intptr_t value) {
-    ptrdiff_t index = intset_find(set, value);
+void set_remove (struct Set * set, intptr_t value) {
+    ptrdiff_t index = set_find(set, value);
     if (index >= 0 && ((size_t)index+1) < set->count) {
         memmove(&(set->values[index]), &(set->values[index+1]), (set->count - index)*sizeof(intptr_t));
     }
     set->count -= 1;
 }
 
-struct IntSet intset_union (struct IntSet const * a, struct IntSet const * b) {
+struct Set set_union (struct Set const * a, struct Set const * b) {
     ASSERT(a && b);
-    struct IntSet result;
+    struct Set result;
     // TODO: Is it faster to add more elements to a smaller set, or fewer elements to a larger set?
     if (a->count >= b->count) {
-        intset_copy(&result, a);
-        for (intptr_t const * it = intset_cbegin(b); it != intset_cend(b); ++it) {
-            intset_add(&result, *it);
+        set_copy(&result, a);
+        for (intptr_t const * it = set_cbegin(b); it != set_cend(b); ++it) {
+            set_add(&result, *it);
         }
     } else {
-        intset_copy(&result, b);
-        for (intptr_t const * it = intset_cbegin(a); it != intset_cend(a); ++it) {
-            intset_add(&result, *it);
+        set_copy(&result, b);
+        for (intptr_t const * it = set_cbegin(a); it != set_cend(a); ++it) {
+            set_add(&result, *it);
         }
     }
     return result;
 }
 
-struct IntSet intset_intersection (struct IntSet const * a, struct IntSet const * b) {
+struct Set set_intersection (struct Set const * a, struct Set const * b) {
     ASSERT(a && b);
-    struct IntSet result;
-    intset_init(&result, 0);
+    struct Set result;
+    set_init(&result, 0);
     if (a->count >= b->count) {
-        for (intptr_t const * it = intset_cbegin(b); it != intset_cend(b); ++it) {
-            if (intset_contains(a, *it)) {
-                intset_add(&result, *it);
+        for (intptr_t const * it = set_cbegin(b); it != set_cend(b); ++it) {
+            if (set_contains(a, *it)) {
+                set_add(&result, *it);
             }
         }
     } else {
-        for (intptr_t const * it = intset_cbegin(a); it != intset_cend(a); ++it) {
-            if (intset_contains(b, *it)) {
-                intset_add(&result, *it);
+        for (intptr_t const * it = set_cbegin(a); it != set_cend(a); ++it) {
+            if (set_contains(b, *it)) {
+                set_add(&result, *it);
             }
         }
     }
     return result;
 }
 
-struct IntSet intset_difference (struct IntSet const * a, struct IntSet const * b) {
+struct Set set_difference (struct Set const * a, struct Set const * b) {
     ASSERT(a && b);
-    struct IntSet result;
-    intset_init(&result, 0);
-    for (intptr_t const * it = intset_cbegin(a); it != intset_cend(a); ++it) {
-        if (!intset_contains(b, *it)) {
-            intset_add(&result, *it);
+    struct Set result;
+    set_init(&result, 0);
+    for (intptr_t const * it = set_cbegin(a); it != set_cend(a); ++it) {
+        if (!set_contains(b, *it)) {
+            set_add(&result, *it);
         }
     }
     return result;
 }
 
-typedef struct IntHashSet {
+typedef struct HashSet {
     size_t n_bins;
-    struct IntSet * bins;
-} IntHashSet_t;
+    struct Set * bins;
+} HashSet_t;
 
-void inthashset_init (struct IntHashSet * set, size_t n_bins, size_t capacity) {
+void hashset_init (struct HashSet * set, size_t n_bins, size_t capacity) {
     ASSERT(set);
     ASSERT(n_bins);
     set->n_bins = n_bins;
-    set->bins = calloc(n_bins, sizeof(struct IntSet));
+    set->bins = calloc(n_bins, sizeof(struct Set));
     for (size_t i = 0; i < n_bins; ++i) {
-        intset_init(&(set->bins[i]), capacity);
+        set_init(&(set->bins[i]), capacity);
     }
 }
 
-void inthashset_free (struct IntHashSet * set) {
+void hashset_free (struct HashSet * set) {
     for (size_t i = 0; i < set->n_bins; ++i) {
-        intset_free(&(set->bins[i]));
+        set_free(&(set->bins[i]));
     }
     free(set->bins);
     set->bins = NULL;
     set->n_bins = 0;
 }
 
-void inthashset_copy (struct IntHashSet * dest, struct IntHashSet const * src) {
+void hashset_copy (struct HashSet * dest, struct HashSet const * src) {
     // TODO: Simplify this
     ASSERT(dest);
     ASSERT(src);
-    inthashset_init(dest, src->n_bins, 0);
+    hashset_init(dest, src->n_bins, 0);
     for (size_t i = 0; i < src->n_bins; ++i) {
-        intset_copy(&(dest->bins[i]), &(src->bins[i]));
+        set_copy(&(dest->bins[i]), &(src->bins[i]));
     }
 }
 
-void inthashset_move (struct IntHashSet * dest, struct IntHashSet * src) {
+void hashset_move (struct HashSet * dest, struct HashSet * src) {
     ASSERT(dest);
     ASSERT(src);
     dest->n_bins = src->n_bins;
@@ -270,7 +270,7 @@ void inthashset_move (struct IntHashSet * dest, struct IntHashSet * src) {
     src->bins = NULL;
 }
 
-size_t inthashset_count (struct IntHashSet const * set) {
+size_t hashset_count (struct HashSet const * set) {
     size_t n = 0;
     for (size_t i = 0; i < set->n_bins; ++i) {
         n += set->bins[i].count;
@@ -278,12 +278,12 @@ size_t inthashset_count (struct IntHashSet const * set) {
     return n;
 }
 
-_Bool inthashset_contains (struct IntHashSet const * set, intptr_t value) {
+_Bool hashset_contains (struct HashSet const * set, intptr_t value) {
     size_t bin_index = HASH(value) % set->n_bins;
-    return intset_contains(&(set->bins[bin_index]), value);
+    return set_contains(&(set->bins[bin_index]), value);
 }
 
-void inthashset_add (struct IntHashSet * set, intptr_t value) {
+void hashset_add (struct HashSet * set, intptr_t value) {
     size_t bin_index = HASH(value) % set->n_bins;
-    intset_add(&(set->bins[bin_index]), value);
+    set_add(&(set->bins[bin_index]), value);
 }

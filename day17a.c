@@ -2,7 +2,7 @@
 #include "set.h"
 
 typedef struct Space {
-    IntHashSet_t values;
+    HashSet_t values;
 } Space_t;
 
 s64 coordEncode (s16 x, s16 y, s16 z) {
@@ -32,8 +32,8 @@ void coordDecode (s64 v, s16 * x, s16 * y, s16 * z) {
 }
 
 int main (int argc, char ** argv) {
-    IntHashSet_t space;
-    inthashset_init(&space, 1024, 0);
+    HashSet_t space;
+    hashset_init(&space, 1024, 0);
 
     s16 xmin = INT16_MAX;
     s16 xmax = INT16_MIN;
@@ -51,7 +51,7 @@ int main (int argc, char ** argv) {
         ASSERT(strlen(s) > 8);
         for (s16 x = 0; x < 8; ++x) {
             if (s[x] == '#') {
-                inthashset_add(&space, coordEncode(x, y, 0));
+                hashset_add(&space, coordEncode(x, y, 0));
                 xmin = MIN(xmin, x);
                 xmax = MAX(xmax, x);
                 ymin = MIN(ymin, y);
@@ -68,7 +68,7 @@ int main (int argc, char ** argv) {
         printf("z=%i\n", z);
         for (s16 y = ymin; y <= ymax; ++y) {
             for (s16 x = xmin; x <= xmax; ++x) {
-                if (inthashset_contains(&space, coordEncode(x, y, z))) {
+                if (hashset_contains(&space, coordEncode(x, y, z))) {
                     printf("#");
                 } else {
                     printf(".");
@@ -82,8 +82,8 @@ int main (int argc, char ** argv) {
 #endif
 
     for (int cycle = 0; cycle < 6; ++cycle) {
-        IntHashSet_t space_next;
-        inthashset_init(&space_next, space.n_bins, 0);
+        HashSet_t space_next;
+        hashset_init(&space_next, space.n_bins, 0);
         s16 xmin_next = INT16_MAX;
         s16 xmax_next = INT16_MIN;
         s16 ymin_next = INT16_MAX;
@@ -126,13 +126,13 @@ int main (int argc, char ** argv) {
                     size_t n_neighbours = 0;
                     for (size_t i = 0; i < ARRAYCOUNT(dxyz); ++i) {
                         s64 in = coordEncode(x+dxyz[i][0], y+dxyz[i][1], z+dxyz[i][2]);
-                        if (inthashset_contains(&space, in)) {
+                        if (hashset_contains(&space, in)) {
                             n_neighbours += 1;
                         }
                     }
-                    if (inthashset_contains(&space, coordEncode(x, y, z))) {
+                    if (hashset_contains(&space, coordEncode(x, y, z))) {
                         if (n_neighbours == 2 || n_neighbours == 3) {
-                            inthashset_add(&space_next, coordEncode(x, y, z));
+                            hashset_add(&space_next, coordEncode(x, y, z));
                             xmin_next = MIN(xmin_next, x);
                             xmax_next = MAX(xmax_next, x);
                             ymin_next = MIN(ymin_next, y);
@@ -142,7 +142,7 @@ int main (int argc, char ** argv) {
                         }
                     } else {
                         if (n_neighbours == 3) {
-                            inthashset_add(&space_next, coordEncode(x, y, z));
+                            hashset_add(&space_next, coordEncode(x, y, z));
                             xmin_next = MIN(xmin_next, x);
                             xmax_next = MAX(xmax_next, x);
                             ymin_next = MIN(ymin_next, y);
@@ -155,8 +155,8 @@ int main (int argc, char ** argv) {
             }
         }
 
-        inthashset_free(&space);
-        inthashset_move(&space, &space_next);
+        hashset_free(&space);
+        hashset_move(&space, &space_next);
         xmin = xmin_next;
         xmax = xmax_next;
         ymin = ymin_next;
@@ -170,7 +170,7 @@ int main (int argc, char ** argv) {
             printf("z=%i\n", z);
             for (s16 y = ymin; y <= ymax; ++y) {
                 for (s16 x = xmin; x <= xmax; ++x) {
-                    if (inthashset_contains(&space, coordEncode(x, y, z))) {
+                    if (hashset_contains(&space, coordEncode(x, y, z))) {
                         printf("#");
                     } else {
                         printf(".");
@@ -184,5 +184,5 @@ int main (int argc, char ** argv) {
 #endif
     }
 
-    DISP(inthashset_count(&space));
+    DISP(hashset_count(&space));
 }

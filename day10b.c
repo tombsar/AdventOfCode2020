@@ -22,13 +22,13 @@ size_t countValidCombinations (intptr_t jolts_now, intptr_t jolts_target, intptr
 }
 
 int main (int argc, char ** argv) {
-    IntSet_t adapters;
-    intset_init(&adapters, 128);
+    Set_t adapters;
+    set_init(&adapters, 128);
     do {
         intptr_t in;
         int ret = scanf("%zi", &in);
         if (ret == 1) {
-            intset_add(&adapters, in);
+            set_add(&adapters, in);
         } else if (ret == EOF) {
             break;
         } else {
@@ -37,9 +37,9 @@ int main (int argc, char ** argv) {
     } while (1);
 
     //intptr_t adapter_min = adapters.data[0];
-    intptr_t adapter_max = intset_max(&adapters);
+    intptr_t adapter_max = set_max(&adapters);
 
     size_t * memo = calloc(adapter_max, sizeof(size_t));
-    size_t combinations = countValidCombinations(0, adapter_max, intset_begin(&adapters), intset_end(&adapters), memo);
+    size_t combinations = countValidCombinations(0, adapter_max, set_begin(&adapters), set_end(&adapters), memo);
     DISP(combinations);
 }

@@ -154,11 +154,11 @@ int main (int argc, char ** argv) {
 
     ASSERT(tiles_count == 12*12);
 
-    IntSet_t corners;
-    intset_init(&corners, 4);
+    Set_t corners;
+    set_init(&corners, 4);
 
-    IntSet_t unplaced;
-    intset_init(&unplaced, 144);
+    Set_t unplaced;
+    set_init(&unplaced, 144);
 
     for (size_t i = 0; i < tiles_count; ++i) {
         Tile_t * tile = &(tiles[i]);
@@ -192,9 +192,9 @@ int main (int argc, char ** argv) {
             }
         }
 
-        intset_add(&unplaced, i);
+        set_add(&unplaced, i);
         if (n_unique == 2) {
-            intset_add(&corners, i);
+            set_add(&corners, i);
         }
     }
 
@@ -207,7 +207,7 @@ int main (int argc, char ** argv) {
 
     // NB: The third corner is used in order to match the orientation used by the puzzle setter
     grid[0] = corners.values[2];
-    intset_remove(&unplaced, grid[0]);
+    set_remove(&unplaced, grid[0]);
     {
         Tile_t * tile = &(tiles[grid[0]]);
         size_t counts [4];
@@ -305,7 +305,7 @@ int main (int argc, char ** argv) {
         }
 
         grid[i] = other_index;
-        intset_remove(&unplaced, other_index);
+        set_remove(&unplaced, other_index);
     }
 
     for (int i = 12; i < 12*12; ++i) {
@@ -359,7 +359,7 @@ int main (int argc, char ** argv) {
         }
 
         grid[i] = other_index;
-        intset_remove(&unplaced, other_index);
+        set_remove(&unplaced, other_index);
     }
 
     ASSERT(unplaced.count == 0);
