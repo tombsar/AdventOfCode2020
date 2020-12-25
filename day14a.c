@@ -35,8 +35,8 @@ u64 applyMask (u64 value, char const * mask) {
 }
 
 int main (int argc, char ** argv) {
-    IntMap_t memory;
-    intmap_init(&memory, 0);
+    Map_t memory;
+    map_init(&memory, 0);
 
     char bitmask [37] = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
     do {
@@ -73,7 +73,7 @@ int main (int argc, char ** argv) {
             unsigned long val = strtoul(value.start, NULL, 10);
             val = applyMask(val, bitmask);
 
-            intmap_set(&memory, addr, val);
+            map_set(&memory, addr, val);
         }
     } while (1);
 

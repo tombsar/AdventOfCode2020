@@ -16,8 +16,8 @@ void print_binary_u64 (u64 value) {
 }
 
 int main (int argc, char ** argv) {
-    IntMap_t memory;
-    intmap_init(&memory, 0);
+    Map_t memory;
+    map_init(&memory, 0);
 
     char bitmask [37] = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
     do {
@@ -89,7 +89,7 @@ int main (int argc, char ** argv) {
             }
 
             for (intptr_t const * it = vector_cbegin(&addrs), * end = vector_cend(&addrs); it != end; ++it) {
-                intmap_set(&memory, *it, val);
+                map_set(&memory, *it, val);
             }
 
             vector_free(&addrs);

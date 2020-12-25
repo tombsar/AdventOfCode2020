@@ -8,14 +8,14 @@ int main (int argc, char ** argv) {
     Vector_t nums;
     vector_init(&nums, N_ROUNDS);
 
-    IntHashMap_t last;
-    inthashmap_init(&last, 1024, N_ROUNDS/1024);
+    HashMap_t last;
+    hashmap_init(&last, 1024, N_ROUNDS/1024);
 
     do {
         long int x;
         int ret = scanf("%li", &x);
         if (ret == 1) {
-            inthashmap_set(&last, x, nums.count);
+            hashmap_set(&last, x, nums.count);
             vector_push_back(&nums, x);
         } else if (ret == EOF) {
             break;
@@ -30,12 +30,12 @@ int main (int argc, char ** argv) {
         if (x_index != -1) {
             y = nums.count - 1 - x_index;
         }
-        if (inthashmap_contains(&last, y)) {
-            x_index = inthashmap_get(&last, y);
+        if (hashmap_contains(&last, y)) {
+            x_index = hashmap_get(&last, y);
         } else {
             x_index = -1;
         }
-        inthashmap_set(&last, y, nums.count);
+        hashmap_set(&last, y, nums.count);
         vector_push_back(&nums, y);
     }
     DISP(nums.data[nums.count-1]);

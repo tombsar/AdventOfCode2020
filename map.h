@@ -2,14 +2,14 @@
 
 #include "hash.h"
 
-typedef struct IntMap {
+typedef struct Map {
     size_t capacity;
     size_t count;
     intptr_t * keys;
     intptr_t * values;
-} IntMap_t;
+} Map_t;
 
-void intmap_init (struct IntMap * map, size_t capacity) {
+void map_init (struct Map * map, size_t capacity) {
     ASSERT(map);
     map->capacity = capacity;
     map->count = 0;
@@ -22,7 +22,7 @@ void intmap_init (struct IntMap * map, size_t capacity) {
     }
 }
 
-void intmap_free (struct IntMap * map) {
+void map_free (struct Map * map) {
     map->capacity = 0;
     map->count = 0;
     free(map->keys);
@@ -31,27 +31,27 @@ void intmap_free (struct IntMap * map) {
     map->values = NULL;
 }
 
-void intmap_resize (struct IntMap * map, size_t capacity) {
+void map_resize (struct Map * map, size_t capacity) {
     if (capacity) {
         map->capacity = capacity;
         map->count = MIN(map->count, capacity);
         map->keys = realloc(map->keys, capacity*sizeof(intptr_t));
         map->values = realloc(map->values, capacity*sizeof(intptr_t));
     } else {
-        intmap_free(map);
+        map_free(map);
     }
 }
 
-void intmap_copy (struct IntMap * dest, struct IntMap const * src) {
+void map_copy (struct Map * dest, struct Map const * src) {
     ASSERT(dest);
     ASSERT(src);
-    intmap_init(dest, src->capacity);
+    map_init(dest, src->capacity);
     memcpy(dest->keys, src->keys, src->count * sizeof(intptr_t));
     memcpy(dest->values, src->values, src->count * sizeof(intptr_t));
     dest->count = src->count;
 }
 
-void intmap_move (struct IntMap * dest, struct IntMap * src) {
+void map_move (struct Map * dest, struct Map * src) {
     ASSERT(dest);
     ASSERT(src);
     dest->capacity = src->capacity;
@@ -64,29 +64,29 @@ void intmap_move (struct IntMap * dest, struct IntMap * src) {
     src->values = NULL;
 }
 
-void intmap_grow (struct IntMap * map) {
+void map_grow (struct Map * map) {
     ASSERT(map);
     size_t capacity = map->capacity;
     capacity = capacity + MAX(capacity / 2, 1);
-    intmap_resize(map, capacity);
+    map_resize(map, capacity);
 }
 
-void intmap_ensure_capacity (struct IntMap * map, size_t capacity) {
+void map_ensure_capacity (struct Map * map, size_t capacity) {
     ASSERT(map);
     while (map->capacity < capacity) {
-        intmap_grow(map);
+        map_grow(map);
     }
 }
 
-void intmap_print (struct IntMap const * map) {
-    printf("IntMap with %zu elements: {\n", map->count);
+void map_print (struct Map const * map) {
+    printf("Map with %zu elements: {\n", map->count);
     for (size_t i = 0; i < map->count; ++i) {
         printf("%8zi => %zi\n", map->keys[i], map->values[i]);
     }
     printf("}\n");
 }
 
-ptrdiff_t intmap_find (struct IntMap const * map, intptr_t key) {
+ptrdiff_t map_find (struct Map const * map, intptr_t key) {
     if (map->count) {
         if (key >= map->keys[0] && key <= map->keys[map->count-1]) {
             intptr_t const * pl = &(map->keys[0]);
@@ -108,12 +108,12 @@ ptrdiff_t intmap_find (struct IntMap const * map, intptr_t key) {
     return -1;
 }
 
-_Bool intmap_contains (struct IntMap const * map, intptr_t key) {
-    return (intmap_find(map, key) >= 0);
+_Bool map_contains (struct Map const * map, intptr_t key) {
+    return (map_find(map, key) >= 0);
 }
 
-intptr_t intmap_get (struct IntMap const * map, intptr_t key) {
-    ptrdiff_t ind = intmap_find(map, key);
+intptr_t map_get (struct Map const * map, intptr_t key) {
+    ptrdiff_t ind = map_find(map, key);
     if (ind >= 0) {
         return map->values[ind];
     }
@@ -121,9 +121,9 @@ intptr_t intmap_get (struct IntMap const * map, intptr_t key) {
     return 0;
 }
 
-void intmap_insert (struct IntMap * map, size_t index, intptr_t key, intptr_t value) {
+void map_insert (struct Map * map, size_t index, intptr_t key, intptr_t value) {
     ASSERT(index <= map->count);
-    intmap_ensure_capacity(map, map->count+1);
+    map_ensure_capacity(map, map->count+1);
     if (index != map->count) {
         memmove(&(map->keys[index+1]), &(map->keys[index]), (map->count - index)*sizeof(intptr_t));
         memmove(&(map->values[index+1]), &(map->values[index]), (map->count - index)*sizeof(intptr_t));
@@ -133,12 +133,12 @@ void intmap_insert (struct IntMap * map, size_t index, intptr_t key, intptr_t va
     map->count += 1;
 }
 
-void intmap_set (struct IntMap * map, intptr_t key, intptr_t value) {
+void map_set (struct Map * map, intptr_t key, intptr_t value) {
     if (map->count) {
         if (key < map->keys[0]) {
-            intmap_insert(map, 0, key, value);
+            map_insert(map, 0, key, value);
         } else if (key > map->keys[map->count-1]) {
-            intmap_insert(map, map->count, key, value);
+            map_insert(map, map->count, key, value);
         } else {
             intptr_t const * pl = &(map->keys[0]);
             intptr_t const * pu = &(map->keys[map->count]);
@@ -155,41 +155,41 @@ void intmap_set (struct IntMap * map, intptr_t key, intptr_t value) {
             if (*pl == key) {
                 map->values[ind] = value;
             } else {
-                intmap_insert(map, ind+1, key, value);
+                map_insert(map, ind+1, key, value);
             }
         }
     } else {
-        intmap_insert(map, 0, key, value);
+        map_insert(map, 0, key, value);
     }
 }
 
-// TODO: intmap_remove
+// TODO: map_remove
 
-typedef struct IntHashMap {
+typedef struct HashMap {
     size_t n_bins;
-    struct IntMap * bins;
-} IntHashMap_t;
+    struct Map * bins;
+} HashMap_t;
 
-void inthashmap_init (struct IntHashMap * map, size_t n_bins, size_t capacity) {
+void hashmap_init (struct HashMap * map, size_t n_bins, size_t capacity) {
     ASSERT(map);
     ASSERT(n_bins);
     map->n_bins = n_bins;
-    map->bins = calloc(n_bins, sizeof(struct IntMap));
+    map->bins = calloc(n_bins, sizeof(struct Map));
     for (size_t i = 0; i < n_bins; ++i) {
-        intmap_init(&(map->bins[i]), capacity);
+        map_init(&(map->bins[i]), capacity);
     }
 }
 
-void inthashmap_free (struct IntHashMap * map) {
+void hashmap_free (struct HashMap * map) {
     for (size_t i = 0; i < map->n_bins; ++i) {
-        intmap_free(&(map->bins[i]));
+        map_free(&(map->bins[i]));
     }
     free(map->bins);
     map->bins = NULL;
     map->n_bins = 0;
 }
 
-size_t inthashmap_count (struct IntHashMap const * set) {
+size_t hashmap_count (struct HashMap const * set) {
     size_t n = 0;
     for (size_t i = 0; i < set->n_bins; ++i) {
         n += set->bins[i].count;
@@ -197,17 +197,17 @@ size_t inthashmap_count (struct IntHashMap const * set) {
     return n;
 }
 
-_Bool inthashmap_contains (struct IntHashMap const * map, intptr_t key) {
+_Bool hashmap_contains (struct HashMap const * map, intptr_t key) {
     size_t bin_index = HASH(key) % map->n_bins;
-    return (intmap_find(&(map->bins[bin_index]), key) != -1);
+    return (map_find(&(map->bins[bin_index]), key) != -1);
 }
 
-intptr_t inthashmap_get (struct IntHashMap const * map, intptr_t key) {
+intptr_t hashmap_get (struct HashMap const * map, intptr_t key) {
     size_t bin_index = HASH(key) % map->n_bins;
-    return intmap_get(&(map->bins[bin_index]), key);
+    return map_get(&(map->bins[bin_index]), key);
 }
 
-void inthashmap_set (struct IntHashMap * map, intptr_t key, intptr_t value) {
+void hashmap_set (struct HashMap * map, intptr_t key, intptr_t value) {
     size_t bin_index = HASH(key) % map->n_bins;
-    intmap_set(&(map->bins[bin_index]), key, value);
+    map_set(&(map->bins[bin_index]), key, value);
 }

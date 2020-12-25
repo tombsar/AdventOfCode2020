@@ -108,10 +108,10 @@ int main (int argc, char ** argv) {
     set_print(&allergen_free_ingredients);
 */
 
-    IntMap_t ingredient_to_allergen_map;
-    intmap_init(&ingredient_to_allergen_map, allergens.count);
-    IntMap_t allergen_to_ingredient_map;
-    intmap_init(&allergen_to_ingredient_map, allergens.count);
+    Map_t ingredient_to_allergen_map;
+    map_init(&ingredient_to_allergen_map, allergens.count);
+    Map_t allergen_to_ingredient_map;
+    map_init(&allergen_to_ingredient_map, allergens.count);
 
     int changes;
     do {
@@ -119,7 +119,7 @@ int main (int argc, char ** argv) {
 
         for (intptr_t const * it = set_cbegin(&allergens); it != set_cend(&allergens); ++it) {
             intptr_t allergen_id = *it;
-            if (intmap_contains(&allergen_to_ingredient_map, allergen_id)) {
+            if (map_contains(&allergen_to_ingredient_map, allergen_id)) {
                 continue;
             }
 
@@ -144,7 +144,8 @@ int main (int argc, char ** argv) {
             }
 
             if (possible_ingredients.count == 1) {
-                intmap_set(&ingredient_to_allergen_map, possible_ingredients.values[0], allergen_id);intmap_set(&allergen_to_ingredient_map, allergen_id, possible_ingredients.values[0]);
+                map_set(&ingredient_to_allergen_map, possible_ingredients.values[0], allergen_id);
+                map_set(&allergen_to_ingredient_map, allergen_id, possible_ingredients.values[0]);
                 ++changes;
             }
             set_free(&possible_ingredients);
