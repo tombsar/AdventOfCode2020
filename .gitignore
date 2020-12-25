@@ -51,5 +51,6 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+day[0-9][0-9]
 day[0-9][0-9][a,b]
 input[0-9][0-9]
