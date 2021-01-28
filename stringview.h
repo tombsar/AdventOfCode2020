@@ -9,9 +9,9 @@ typedef struct StringView {
 
 struct StringView sv_view_c_string (char const * str) {
     char const * p = str;
-    do {
+    while (*p != '\0') {
         ++p;
-    } while (*p != '\0');
+    }
     struct StringView sv = {
         .start = str,
         .end = p
